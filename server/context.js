@@ -1,25 +1,27 @@
-exports = exports.module = httpOAuthContext;
+var util = require('util');
 
-function httpOAuthContext(req)
+exports.httpOAuthContext = function (req)
 {
 	var getParam = function(paramName) {
-		if (req.query[paramName])
+		if (typeof req.query[paramName] !== undefined)
 			return req.query[paramName];
-		else if (req.body[paramName])
+		else if (typeof req.body[paramName] !== undefined)
 			return req.body[paramName];
+		else
+			return '';
 	};
 
+	var scope = getParam('scope');
+	scope = scope && scope.length > 0 ? scope.split(',') : [];
+
 	return {
-		responseType: function() { return getParam('response_type'); },
-		clientId: function() { return getParam('client_id'); },
-		clientSecret: function() { return getParam('client_secret'); },
-		code: function() { return getParam('code'); },
-		grantType: function() { return getParam('grant_type'); },
-		state: function() { return getParam('state'); },
-		scope: function() {  
-					var queryScope = getParam('scope');
-					return queryScope ? queryScope.split(',') : []; 
-				},
-		redirectUri: function() { return getParam('redirect_uri'); }
+		responseType: getParam('response_type'),
+		clientId: getParam('client_id'),
+		clientSecret: getParam('client_secret'),
+		code: getParam('code'),
+		grantType: getParam('grant_type'),
+		state: getParam('state'),
+		scope: scope,
+		redirectUri: getParam('redirect_uri')
 	};
 };

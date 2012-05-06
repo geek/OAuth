@@ -1,59 +1,55 @@
-var httpOAuthContext = require('./context'),
-	errors = require('./errors');
+var httpOAuthContext = require('./context').httpOAuthContext,
+	errors = require('./errors').errors;
 
-function OAuthService(clientService, tokenService, authorizationService, expiresIn, supportedScopes) {
-	this.clientService = clientService;
-	this.tokenService = tokenService;
-	this.authorizationService = authorizationService;
-	this.expiresIn = expiresIn ?? 3600;
+exports.service = function(clientService, tokenService, authorizationService, expiresIn, supportedScopes) {
+	expiresIn = expiresIn || 3600;
 
-	this.isSupportedScope = function(scope)
-	{
-		if (!supportedScopes || supportedScopes.length === 0)
-			return false;
+	var isSupportedScope = function(scope) {
+		if (isEmpty(supportedScopes))
+			return true;
 
 		// TODO: Update this search the supported scopes for the provided scope
 		return true;
 	};
-}
-
-OAuthService.prototype.AuthorizeRequest = function(req, userId) {
-	var context = httpOAuthContext(req),
-		self = this;
-
-	if (isEmpty(context.responseType)
-		return errors.invalidRequest(context);
-	else if (!isAllowedResponseType(context.responseType))
-		return errors.unsupportedResponseType(context);
-	
-	var client = self.clientService.getById(context.clientId);
-	if (!client)
-		return errors.invalidClient(context);
-	else if (!context.redirectUri || !client.isValidRedirectUri(context.redirectUri))
-		return errrors.redirectUriMismatch(context);
-
-	if (!self.isSupportedScope(context.scope))
-		return errors.invalidScope(context);
-
-	var token = isTokenResponseType(context.responseType) ? self.tokenService.generateToken() : null,
-		code = isCodeResponseType(context.responseType) ? self.tokenService.generateToken() : null;
-
-	if ((!isEmpty(code) || context.clientSecret) && !areClientCredentialsValid(client, context))
-		return errors.clientCredentialsInvalid(context);
-
-	if (!isEmpty(code)) {
-		self.authorizationService.SaveAuthorizationCode({
-			code: code,
-			redirectUri: context.redirectUri,
-			clientId: client.Id,
-			timestamp: new Date(),
-			userId: userId
-		});
-	}
 
 	return {
-		state: context.state,
-		redirectUri: buildAuthorizationUri(context.redirectUri, code, token, context.scope, context.state, self.expiresIn)
+		authorizeRequest: function(req, userId) {
+			var context = httpOAuthContext(req);
+
+			if (isEmpty(context.responseType))
+				return errors.invalidRequest(context.state);
+			else if (!isAllowedResponseType(context.responseType))
+				return errors.unsupportedResponseType(context.state);
+			
+			var client = clientService.getById(context.clientId);
+			if (!client)
+				return errors.invalidClient(context);
+			else if (!context.redirectUri || !client.isValidRedirectUri(context.redirectUri))
+				return errors.redirectUriMismatch(context.state);
+
+			if (!isSupportedScope(context.scope))
+				return errors.invalidScope(context.state);
+
+			var token = isTokenResponseType(context.responseType) ? tokenService.generateToken() : null,
+				code = isCodeResponseType(context.responseType) ? tokenService.generateToken() : null;
+
+			if (!isEmpty(code)) {
+				authorizationService.saveAuthorizationCode({
+					code: code,
+					redirectUri: context.redirectUri,
+					clientId: client.Id,
+					timestamp: new Date(),
+					userId: userId
+				});
+			}
+
+			var authorizationUrl = buildAuthorizationUri(context.redirectUri, code, token, context.scope, context.state, expiresIn);
+
+			return {
+				redirectUri: authorizationUrl,
+				state: context.state
+			};
+		}
 	};
 };
 
@@ -88,10 +84,12 @@ var isAllowedResponseType = function(responseType) {
 
 		if (!isEmpty(state))
 			query += "&state=" + state;
+
+		return redirectUri + "?" + query;
 	},
 	areClientCredentialsValid = function(client, context) {
 		return client.id === context.clientId && client.secret === context.clientSecret;		
 	},
 	isEmpty= function(item) {
-		return item && item.length > 0);
+		return !item || item.length === 0;
 	};

@@ -2,14 +2,16 @@ var oauth = require('../server/oauthService.js'),
 	connect = require('connect'),
 	util = require('util');
 
-var client = {
-		id: '1',
-		secret: 'what',
-		isValidRedirectUri: function(uri) { return true; }
+var clients = {
+		'1': {
+			id: '1',
+			secret: 'what',
+			isValidRedirectUri: function(uri) { return true; }
+		}
 	},
 	clientService = {
 		getById: function(id) {
-			return client;
+			return clients[id];
 		}
 	},
 	tokenService = {
