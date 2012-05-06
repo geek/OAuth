@@ -81,5 +81,7 @@ exports.errors = {
 	invalidAuthorizationCode: invalidAuthorizationCode,
 	cannotRequestImplicitToken: cannotRequestImplicitToken,
 	clientCredentialsInvalid: clientCredentialsInvalid,
-	userCredentialsInvalid: userCredentialsInvalid
+	userCredentialsInvalid: userCredentialsInvalid,
+	unsupportedGrantType: unsupportedGrantType,
+	unsupportedGrantTypeForClient: unsupportedGrantTypeForClient
 };
