@@ -21,6 +21,7 @@ exports.httpOAuthContext = function (req)
 		code: getParam('code'),
 		grantType: getParam('grant_type'),
 		state: getParam('state'),
+		password: getParam('password'),
 		scope: scope,
 		redirectUri: getParam('redirect_uri')
 	};
