@@ -36,7 +36,7 @@ var clients = {
 		}
 	},
 	membershipService = {
-		areUserCredentialsValid: function() {
+		areUserCredentialsValid: function(usernId, password) {
 			return true;
 		}
 	};

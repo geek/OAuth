@@ -59,7 +59,7 @@ exports.service = function(clientService, tokenService, authorizationService, me
 	var grantAccessToken = function(req, userId) {
 		var context = httpOAuthContext(req);
 
-		var getTokenData = function(context, oauthProvider) {
+		var getTokenData = function(oauthProvider) {
 			var grantType = context.grantType.toLowerCase();
 			var generateTokenData = function(includeRefreshToken) {
 				var tokenData = {
@@ -107,7 +107,7 @@ exports.service = function(clientService, tokenService, authorizationService, me
 		if (grantTypes.requiresClientSecret(context.grantType) && context.clientSecret !== client.secret)
 			return errors.clientCredentialsInvalid(context.state);
 
-		var tokenData = getTokenData(context, service);
+		var tokenData = getTokenData(service);
 		if (!tokenData.error)
 			service.authorizationService.saveAccessToken(tokenData);
 		
