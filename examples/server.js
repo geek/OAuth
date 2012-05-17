@@ -39,17 +39,18 @@ var clients = {
 		areUserCredentialsValid: function(usernId, password) {
 			return true;
 		}
-	};
+	},
+	supportedScopes = [ 'profile', 'status', 'avatar'],
+	expiresIn = 3600,
+	service = oauth.service(clientService, tokenService, authorizationService, membershipService, expiresIn, supportedScopes);
 
 var authorize = function(req, res) {
-		service = oauth.service(clientService, tokenService, authorizationService, membershipService, 3600);
-		var oauthUri = service.authorizeRequest(req, '123');
+		var oauthUri = service.authorizeRequest(req, 'userid');
 		res.write(util.inspect(oauthUri));
 		res.end();
 	},
 	grantToken = function(req, res) {
-		service = oauth.service(clientService, tokenService, authorizationService, membershipService, 3600);
-		var token = service.grantAccessToken(req, '123');
+		var token = service.grantAccessToken(req, 'userid');
 		res.write(util.inspect(token));
 		res.end();
 	};

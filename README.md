@@ -8,15 +8,20 @@ This is a server implementation for the [v2-25 OAuth](http://tools.ietf.org/html
 ## Expectations
 
 You will need to construct the oauth object by passing in the following parameters.
+
 1. An object passed in as the tokenService parameter that has a function named generateToken.  generateToken should return a unique string, which will be used for the access and refresh tokens.
+
 2. An object passed in as the clientService parameter that has a function named getById.  getById will be passed an ID and will be expected to return a client object.
+
 3. A client object should have the following:
   * id 
   * secret
   * grantTypes (array of allowed grant types for this client, you must pass implicit if you want to allow this type)
   * isValidRedirectUri (function that takes as a parameter a redirectUri)
     Because a client can have multiple valid redirect Uri's I have decided to put the responsibility of checking the uri on the client itself.  One reason for this is that it will allow desktop clients to return true if they want.
+
 4. An object passed in as the membershipService parameter that has a function named areUserCredentialsValid.  This function should return a boolean to indicate if the passed in userId and password are valid.  This object is required if you want to allow the password grant type, otherwise you can pass null.  You will probably want to perform additional checks here to make sure the user is not locked out or banned.  Another suggestion is to log failed login attempts and lockout users after a set number of failed attempts to mitigate brute force attacks.
+
 5. An object passed in the authorizationService parameter with the following functions:
   * saveAuthorizationCode(code)
   * saveAccessToken(token)
@@ -33,4 +38,4 @@ You will need to construct the oauth object by passing in the following paramete
 
 ## Example
 
-Please refer to the examples folder for a demonstration of using the server.  
+Please refer to the examples folder for a demonstration of using the server.

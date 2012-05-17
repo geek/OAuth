@@ -1,4 +1,6 @@
-exports.grantTypes = (function() {
+var util = require('./util');
+
+exports = (function() {
 	var authorizationCode = 'authorization_code',
 		implicit = 'implict',
 		clientCredentials = 'client_credentials',
@@ -35,22 +37,11 @@ exports.grantTypes = (function() {
 			return false;
 	};
 
-	var doesArrayContain = function(arrayList, item) {
-		var length = arrayList.length;
-
-		for(var i = 0; i < length; i++) {
-			if (arrayList[i] === item)
-				return true;
-		}
-
-		return false;
-	};
-
 	var isAllowedForClient = function(clientGrantTypes, grantType) {
 		if (isEmpty(grantType))
 			return false;
 
-		return doesArrayContain(clientGrantTypes, grantType);
+		return util.doesArrayContain(clientGrantTypes, grantType);
 	};
 
 	return {
