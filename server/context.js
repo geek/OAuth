@@ -23,6 +23,7 @@ exports.httpOAuthContext = function (req)
 		state: getParam('state'),
 		password: getParam('password'),
 		scope: scope,
-		redirectUri: getParam('redirect_uri')
+		redirectUri: getParam('redirect_uri'),
+		accessToken: getParam('access_token')
 	};
 };

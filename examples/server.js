@@ -3,7 +3,9 @@ var oauth = require('../server/oauthService.js'),
 	util = require('util'),
 	uuid = require('node-uuid');
 
-var clients = {
+var authCodes = {},
+	accessTokens = {},
+	clients = {
 		'1': {
 			id: '1',
 			secret: 'what',
@@ -22,17 +24,19 @@ var clients = {
 		}
 	},
 	authorizationService = {
-		saveAuthorizationCode: function(code) {
-
+		saveAuthorizationCode: function(codeDate) {
+			authCodes[codeData.code] = codeData;
 		},
-		saveAccessToken: function(token) {
-
+		saveAccessToken: function(tokenData) {
+			accessTokens[tokenData.accessToken] = tokenData;
 		},
-		getAuthorizationCode: function(codeId) {
-			return {
-				code: uuid.v4(),
-				expiresDate: new Date()
-			};
+		getAuthorizationCode: function(code) {
+			return authCodes[code]; 
+		},
+		getAccessToken: function(token) {
+			console.log(util.inspect(accessTokens));
+			
+			return accessTokens[token];
 		}
 	},
 	membershipService = {
@@ -53,12 +57,18 @@ var authorize = function(req, res) {
 		var token = service.grantAccessToken(req, 'userid');
 		res.write(util.inspect(token));
 		res.end();
+	},
+	apiEndpoint = function(req, res) {
+		var validationResponse = service.validateAccessToken(req);
+		res.write(util.inspect(validationResponse));
+		res.end();
 	};
 
 var server = connect()
 		.use(connect.query())
 		.use(connect.bodyParser())
 		.use('/oauth/authorize', authorize)
-		.use('/oauth/token', grantToken).listen(8001);
+		.use('/oauth/token', grantToken)
+		.use('/api/test', apiEndpoint).listen(8001);
 
 console.log('listening on port 8001');

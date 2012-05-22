@@ -1,6 +1,6 @@
 var util = require('./util');
 
-exports = (function() {
+(function() {
 	var authorizationCode = 'authorization_code',
 		implicit = 'implict',
 		clientCredentials = 'client_credentials',
@@ -44,13 +44,12 @@ exports = (function() {
 		return util.doesArrayContain(clientGrantTypes, grantType);
 	};
 
-	return {
-		authorizationCode: authorizationCode,
-		implicit: implicit,
-		clientCredentials: clientCredentials,
-		password: password,
-		requiresClientSecret: requiresClientSecret,
-		isAllowed: isAllowed,
-		isAllowedForClient: isAllowedForClient
-	};
+	
+	exports.authorizationCode = authorizationCode;
+	exports.implicit = implicit;
+	exports.clientCredentials = clientCredentials;
+	exports.password = password;
+	exports.requiresClientSecret = requiresClientSecret;
+	exports.isAllowed = isAllowed;
+	exports.isAllowedForClient = isAllowedForClient;
 })();

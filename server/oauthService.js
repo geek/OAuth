@@ -19,6 +19,9 @@ exports.service = function(clientService, tokenService, authorizationService, me
 			return false;
 
 		return true;
+	},
+		getExpiresDate = function() {
+			return new Date(new Date().getTime() + service.expiresIn * 60000);
 	};
 
 	var authorizeRequest = function(req, userId) {
@@ -41,7 +44,7 @@ exports.service = function(clientService, tokenService, authorizationService, me
 		var token = isTokenResponseType(context.responseType) ? tokenService.generateToken() : null,
 			code = isCodeResponseType(context.responseType) ? tokenService.generateToken() : null;
 
-		if (!util.isEmpty(code)) {
+		if (!util.isEmpty(code))
 			authorizationService.saveAuthorizationCode({
 				code: code,
 				redirectUri: context.redirectUri,
@@ -49,7 +52,11 @@ exports.service = function(clientService, tokenService, authorizationService, me
 				timestamp: new Date(),
 				userId: userId
 			});
-		}
+		else if (!util.isEmpty(token))
+			authorizationService.saveAccessToken({
+				accessToken: token,
+				expiresDate: getExpiresDate()
+			});
 
 		var authorizationUrl = buildAuthorizationUri(context.redirectUri, code, token, context.scope, context.state, expiresIn);
 
@@ -67,7 +74,7 @@ exports.service = function(clientService, tokenService, authorizationService, me
 			var generateTokenData = function(includeRefreshToken) {
 				var tokenData = {
 						accessToken: oauthProvider.tokenService.generateToken(),
-						expiresIn: service.expiresIn
+						expiresDate: getAccessDate()
 					};
 
 				if (includeRefreshToken)
@@ -117,9 +124,32 @@ exports.service = function(clientService, tokenService, authorizationService, me
 		return tokenData;
 	};
 
+	var validateAccessToken = function(req) {
+		var context = httpOAuthContext(req);
+
+		var tokenData = service.authorizationService.getAccessToken(context.accessToken);
+
+		if (!tokenData || !tokenData.accessToken)
+			return {
+				isValid: false,
+				error: 'Access token not found'
+			};
+
+		if (util.isExpired(tokenData.expiresDate)) 
+			return {
+				isValid: false,
+				error: 'Access token has expired'
+			};
+
+		return {
+			isValid: true
+		};
+	};
+
 	return {
 		authorizeRequest: authorizeRequest,
-		grantAccessToken: grantAccessToken
+		grantAccessToken: grantAccessToken,
+		validateAccessToken: validateAccessToken
 	};
 };
 
