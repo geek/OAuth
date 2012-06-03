@@ -25,47 +25,53 @@ function AuthServer(clientService, tokenService, authorizationService, membershi
 	};
 };
 
-AuthServer.prototype.authorizeRequest = function(req, userId) {
+AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 	var self = this,
 		context = httpOAuthContext(req);
 
 	if (!context || !context.responseType)
-		return errors.invalidRequest(context.state);
+		return callback(errors.invalidRequest(context.state));
 	else if (!oauthUtil.isAllowedResponseType(context.responseType))
-		return errors.unsupportedResponseType(context.state);
+		return callback(errors.unsupportedResponseType(context.state));
 		
-	var client = self.clientService.getById(context.clientId);
-	if (!client)
-		return errors.invalidClient(context);
-	else if (!context.redirectUri || !client.isValidRedirectUri(context.redirectUri))
-		return errors.redirectUriMismatch(context.state);
+	var authorizeRequestWithClient = function(client) {
+		if (!client)
+			return callback(errors.invalidClient(context));
+		else if (!context.redirectUri || !client.isValidRedirectUri(context.redirectUri))
+			return callback(errors.redirectUriMismatch(context.state));
 
-	if (!self.isSupportedScope(context.scope))
-		return errors.invalidScope(context.state);
+		if (!self.isSupportedScope(context.scope))
+			return callback(errors.invalidScope(context.state));
 
-	var token = oauthUtil.isTokenResponseType(context.responseType) ? self.tokenService.generateToken() : null,
-		code = oauthUtil.isCodeResponseType(context.responseType) ? self.tokenService.generateToken() : null;
+		var token = oauthUtil.isTokenResponseType(context.responseType) ? self.tokenService.generateToken() : null,
+			code = oauthUtil.isCodeResponseType(context.responseType) ? self.tokenService.generateToken() : null;
 
-	if (code)
-		self.authorizationService.saveAuthorizationCode({
-			code: code,
-			redirectUri: context.redirectUri,
-			clientId: client.Id,
-			timestamp: new Date(),
-			userId: userId
-		});
-	else if (token)
-		self.authorizationService.saveAccessToken({
-			accessToken: token,
-			expiresDate: this.getExpiresDate()
-		});
+		if (code)
+			self.authorizationService.saveAuthorizationCode({
+				code: code,
+				redirectUri: context.redirectUri,
+				clientId: client.Id,
+				timestamp: new Date(),
+				userId: userId
+			});
+		else if (token)
+			self.authorizationService.saveAccessToken({
+				accessToken: token,
+				expiresDate: this.getExpiresDate()
+			});
 
-	var authorizationUrl = oauthUtil.buildAuthorizationUri(context.redirectUri, code, token, context.scope, context.state, self.expiresIn);
+		var authorizationUrl = oauthUtil.buildAuthorizationUri(context.redirectUri, code, token, context.scope, context.state, self.expiresIn);
 
-	return {
-		redirectUri: authorizationUrl,
-		state: context.state
+		return {
+			redirectUri: authorizationUrl,
+			state: context.state
+		};
+	},
+	next = function(client) {
+		authorizeRequestWithClient(client);
 	};
+
+	self.clientService.getById(context.clientId, next);
 };
 
 AuthServer.prototype.grantAccessToken = function(req, userId) {

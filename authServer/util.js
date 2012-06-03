@@ -1,4 +1,7 @@
 var doesArrayContain = function(arrayList, item) {
+	if (!arrayList)
+		return false;
+	
 	var length = arrayList.length;
 
 	for(var i = 0; i < length; i++) {
@@ -7,17 +10,6 @@ var doesArrayContain = function(arrayList, item) {
 	}
 
 	return false;
-},
-
-getInArray = function(arrayList, id) {
-	var length = arrayList.length;
-
-	for(var i = 0; i < length; i++) {
-		if (arrayList[i] === id)
-			return arrayList[i];
-	}
-
-	return null;
 },
 
 isExpired = function(expiresDate) {
