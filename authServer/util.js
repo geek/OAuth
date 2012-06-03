@@ -30,7 +30,6 @@ isTokenResponseType = function(responseType) {
 
 isValidAuthorizationCode = function(context, authorizationService) {
 	var authorizationCode = authorizationService.getAuthorizationCode(context.code);
-	
 	return authorizationCode && (context.code === authorizationCode.code) && !isExpired(authorizationCode.expiresDate);
 },
 
@@ -46,11 +45,13 @@ buildAuthorizationUri = function(redirectUri, code, token, scope, state, expires
 
 	if (scope) {
 		var scopeFormatted = '&scope=';
-		for(var i = 0; i < scope.length; i++) {
+		for(var i = 0, len = scope.length; i < len; i++) {
 			scopeFormatted += scope[i] + ',';
 		}
 
-		scopeFormatted = scopeFormatted.slice(0, scopeFormatted.length - 1);
+		if (scopeFormatted[scopeFormatted.length] === ',')
+			scopeFormatted = scopeFormatted.slice(0, scopeFormatted.length - 1);
+		
 		query += scopeFormatted;
 	}
 
@@ -61,7 +62,7 @@ buildAuthorizationUri = function(redirectUri, code, token, scope, state, expires
 },
 
 areClientCredentialsValid = function(client, context) {
-		return client.id === context.clientId && client.secret === context.clientSecret;		
+	return client.id === context.clientId && client.secret === context.clientSecret;		
 };
 
 exports.doesArrayContain = doesArrayContain;

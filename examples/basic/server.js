@@ -14,8 +14,8 @@ var authCodes = {},
 		}
 	},
 	clientService = {
-		getById: function(id) {
-			return clients[id];
+		getById: function(id, callback) {
+			return callback(clients[id]);
 		}
 	},
 	tokenService = {
@@ -24,7 +24,7 @@ var authCodes = {},
 		}
 	},
 	authorizationService = {
-		saveAuthorizationCode: function(codeDate) {
+		saveAuthorizationCode: function(codeData) {
 			authCodes[codeData.code] = codeData;
 		},
 		saveAccessToken: function(tokenData) {
@@ -34,8 +34,6 @@ var authCodes = {},
 			return authCodes[code]; 
 		},
 		getAccessToken: function(token) {
-			console.log(util.inspect(accessTokens));
-			
 			return accessTokens[token];
 		}
 	},
@@ -49,14 +47,16 @@ var authCodes = {},
 	authServer = new oauth.AuthServer(clientService, tokenService, authorizationService, membershipService, expiresIn, supportedScopes);
 
 var authorize = function(req, res) {
-		var oauthUri = authServer.authorizeRequest(req, 'userid');
-		res.write(util.inspect(oauthUri));
-		res.end();
+		authServer.authorizeRequest(req, 'userid', function(response) {
+			res.write(util.inspect(response));
+			res.end();
+		});
 	},
 	grantToken = function(req, res) {
-		var token = authServer.grantAccessToken(req, 'userid');
-		res.write(util.inspect(token));
-		res.end();
+		authServer.grantAccessToken(req, 'userid', function(token) {
+			res.write(util.inspect(token));
+			res.end();
+		});
 	},
 	apiEndpoint = function(req, res) {
 		var validationResponse = authServer.validateAccessToken(req);
