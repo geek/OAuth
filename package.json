@@ -1,7 +1,7 @@
 {
   "author": "Wyatt Preul <wpreul@gmail.com> (http://kittenbubbles.com)",
-  "name": "OAuth",
-  "description": "OAuth Provider for v2.26 of spec",
+  "name": "auth-server",
+  "description": "OAuth Server for v2.26 of spec",
   "keywords": ["oauth", "auth server"],
   "version": "2.0.26",
   "homepage": "https://github.com/wpreul/oauth",
