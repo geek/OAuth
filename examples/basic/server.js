@@ -24,22 +24,24 @@ var authCodes = {},
 		}
 	},
 	authorizationService = {
-		saveAuthorizationCode: function(codeData) {
+		saveAuthorizationCode: function(codeData, callback) {
 			authCodes[codeData.code] = codeData;
+			return callback();
 		},
-		saveAccessToken: function(tokenData) {
+		saveAccessToken: function(tokenData, callback) {
 			accessTokens[tokenData.accessToken] = tokenData;
+			return callback();
 		},
-		getAuthorizationCode: function(code) {
-			return authCodes[code]; 
+		getAuthorizationCode: function(code, callback) {
+			return callback(authCodes[code]); 
 		},
-		getAccessToken: function(token) {
-			return accessTokens[token];
+		getAccessToken: function(token, callback) {
+			return callback(accessTokens[token]);
 		}
 	},
 	membershipService = {
-		areUserCredentialsValid: function(userId, password) {
-			return true;
+		areUserCredentialsValid: function(userId, password, callback) {
+			return callback(true);
 		}
 	},
 	supportedScopes = [ 'profile', 'status', 'avatar'],
@@ -59,9 +61,10 @@ var authorize = function(req, res) {
 		});
 	},
 	apiEndpoint = function(req, res) {
-		var validationResponse = authServer.validateAccessToken(req);
-		res.write(util.inspect(validationResponse));
-		res.end();
+		authServer.validateAccessToken(req, function(validationResponse) {
+			res.write(util.inspect(validationResponse));
+			res.end();
+		});
 	};
 
 var server = connect()

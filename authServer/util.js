@@ -1,39 +1,50 @@
-var doesArrayContain = function(arrayList, item) {
+exports.isValidAuthorizationCode = function(context, authorizationService, callback) {
+	authorizationService.getAuthorizationCode(context.code, function(authorizationCode) {
+		return callback(authorizationCode && (context.code === authorizationCode.code) && !exports.isExpired(authorizationCode.expiresDate));
+	});
+};
+
+exports.generateTokenData = function(includeRefreshToken, generateToken, getExpiresDate) {
+	var tokenData = {
+			accessToken: generateToken(),
+			expiresDate: getExpiresDate()
+		};
+
+	if (includeRefreshToken)
+		tokenData.refreshToken = generateToken();
+	
+	return tokenData;
+};
+
+exports.doesArrayContain = function(arrayList, item) {
 	if (!arrayList)
 		return false;
 	
-	var length = arrayList.length;
-
-	for(var i = 0; i < length; i++) {
+	for(var i = 0, length = arrayList.length; i < length; i++) {
 		if (arrayList[i] === item)
 			return true;
 	}
 
 	return false;
-},
+};
 
-isExpired = function(expiresDate) {
+exports.isExpired = function(expiresDate) {
 	return expiresDate < new Date();
-},
+};
 
-isAllowedResponseType = function(responseType) {
-	return isCodeResponseType(responseType) || isTokenResponseType(responseType);
-},
+exports.isAllowedResponseType = function(responseType) {
+	return exports.isCodeResponseType(responseType) || exports.isTokenResponseType(responseType);
+};
 
-isCodeResponseType = function(responseType) {
+exports.isCodeResponseType = function(responseType) {
 	return responseType === 'code' || responseType === 'code_and_token';
-},
+};
 
-isTokenResponseType = function(responseType) {
+exports.isTokenResponseType = function(responseType) {
 	return responseType === 'token' || responseType === 'code_and_token';
-},
+};
 
-isValidAuthorizationCode = function(context, authorizationService) {
-	var authorizationCode = authorizationService.getAuthorizationCode(context.code);
-	return authorizationCode && (context.code === authorizationCode.code) && !isExpired(authorizationCode.expiresDate);
-},
-
-buildAuthorizationUri = function(redirectUri, code, token, scope, state, expiresIn) {
+exports.buildAuthorizationUri = function(redirectUri, code, token, scope, state, expiresIn) {
 	var query = '';
 
 	if (code)
@@ -59,16 +70,8 @@ buildAuthorizationUri = function(redirectUri, code, token, scope, state, expires
 		query += '&state=' + state;
 
 	return redirectUri + '?' + query;
-},
-
-areClientCredentialsValid = function(client, context) {
-	return client.id === context.clientId && client.secret === context.clientSecret;		
 };
 
-exports.doesArrayContain = doesArrayContain;
-exports.isExpired = isExpired;
-exports.isAllowedResponseType = isAllowedResponseType;
-exports.isCodeResponseType = isCodeResponseType;
-exports.isTokenResponseType = isTokenResponseType;
-exports.isValidAuthorizationCode = isValidAuthorizationCode;
-exports.buildAuthorizationUri = buildAuthorizationUri;
+exports.areClientCredentialsValid = function(client, context) {
+	return client.id === context.clientId && client.secret === context.clientSecret;		
+};

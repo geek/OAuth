@@ -1,18 +1,14 @@
-var httpOAuthContext = function (req)
-{
-	var getParam = function(paramName) {
-		if (typeof req.query[paramName] !== undefined)
+exports.httpOAuthContext = function (req) {
+	function getParam(paramName) {
+		if (req.query && typeof req.query[paramName] !== undefined)
 			return req.query[paramName];
-		else if (typeof req.body[paramName] !== undefined)
+		else if (req.body && typeof req.body[paramName] !== undefined)
 			return req.body[paramName];
 		else
-			return '';
+			return null;
 	};
 
-	var scope = getParam('scope');
-	scope = scope && scope.length > 0 ? scope.split(',') : [];
-
-	return {
+	return req ? {
 		responseType: getParam('response_type'),
 		clientId: getParam('client_id'),
 		clientSecret: getParam('client_secret'),
@@ -20,10 +16,8 @@ var httpOAuthContext = function (req)
 		grantType: getParam('grant_type'),
 		state: getParam('state'),
 		password: getParam('password'),
-		scope: scope,
+		scope: getParam('scope') ? getParam('scope').split(',') : null,
 		redirectUri: getParam('redirect_uri'),
 		accessToken: getParam('access_token')
-	};
+	} : null;
 };
-
-exports.httpOAuthContext = httpOAuthContext;
