@@ -1,52 +1,33 @@
-var util = require('./util'),
+var util = require('./util');
 
-authorizationCode = 'authorization_code',
-implicit = 'implict',
-clientCredentials = 'client_credentials',
-password = 'password',
+exports.authorizationCode = 'authorization_code';
+exports.implicit = 'implict';
+exports.clientCredentials = 'client_credentials';
+exports.password = 'password';
 
-isEmpty = function(item) {
-	return !item || item.length === 0;
-},
+exports.requiresClientSecret = function(grantType) {
+	grantType = grantType ? grantType.toLowerCase() : grantType;
+	return !grantType || (grantType === exports.authorizationCode) || (grantType === exports.clientCredentials);
+};
 
-requiresClientSecret = function(grantType) {
-	if (isEmpty(grantType))
-		return true;
-
-	grantType = grantType.toLowerCase();
-	
-	return (grantType === authorizationCode) || (grantType === clientCredentials);
-},
-
-isAllowed = function(grantType, oauthProvider) {
-	if (isEmpty(grantType))
+exports.isAllowed = function(grantType, oauthProvider) {
+	if (!grantType)
 		return false;
 
 	grantType = grantType.toLowerCase();
 
-	if (grantType === implicit)
+	if (grantType === exports.implicit)
 		return true;
-	else if (grantType === authorizationCode && oauthProvider.authorizationService)
+	else if (grantType === exports.authorizationCode && oauthProvider.authorizationService)
 		return true;
-	else if (grantType === clientCredentials && oauthProvider.clientService)
+	else if (grantType === exports.clientCredentials && oauthProvider.clientService)
 		return true;
-	else if (grantType === password && oauthProvider.membershipService)
+	else if (grantType === exports.password && oauthProvider.membershipService)
 		return true;
 	else
 		return false;
-},
-
-isAllowedForClient = function(clientGrantTypes, grantType) {
-	if (isEmpty(grantType))
-		return false;
-
-	return util.doesArrayContain(clientGrantTypes, grantType);
 };
 
-exports.authorizationCode = authorizationCode;
-exports.implicit = implicit;
-exports.clientCredentials = clientCredentials;
-exports.password = password;
-exports.requiresClientSecret = requiresClientSecret;
-exports.isAllowed = isAllowed;
-exports.isAllowedForClient = isAllowedForClient;
+exports.isAllowedForClient = function(clientGrantTypes, grantType) {
+	return grantType ? util.doesArrayContain(clientGrantTypes, grantType) : false;
+};
