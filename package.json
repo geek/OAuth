@@ -18,7 +18,7 @@
     "node": "*"
   },
   "directories": {
-    "authServer": "./authServer",
+    "authServer": "./authServer"
   },
   "licenses": [
     {
