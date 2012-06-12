@@ -3,7 +3,9 @@ var oauth = require('../server/oauthService.js'),
 	util = require('util'),
 	uuid = require('node-uuid');
 
-var clients = {
+var authCodes = {},
+	accessTokens = {},
+	clients = {
 		'1': {
 			id: '1',
 			secret: 'what',
@@ -22,35 +24,43 @@ var clients = {
 		}
 	},
 	authorizationService = {
-		saveAuthorizationCode: function(code) {
-
+		saveAuthorizationCode: function(codeDate) {
+			authCodes[codeData.code] = codeData;
 		},
-		saveAccessToken: function(token) {
-
+		saveAccessToken: function(tokenData) {
+			accessTokens[tokenData.accessToken] = tokenData;
 		},
-		getAuthorizationCode: function(codeId) {
-			return {
-				code: uuid.v4(),
-				expiresDate: new Date()
-			};
+		getAuthorizationCode: function(code) {
+			return authCodes[code]; 
+		},
+		getAccessToken: function(token) {
+			console.log(util.inspect(accessTokens));
+			
+			return accessTokens[token];
 		}
 	},
 	membershipService = {
-		areUserCredentialsValid: function() {
+		areUserCredentialsValid: function(usernId, password) {
 			return true;
 		}
-	};
+	},
+	supportedScopes = [ 'profile', 'status', 'avatar'],
+	expiresIn = 3600,
+	service = oauth.service(clientService, tokenService, authorizationService, membershipService, expiresIn, supportedScopes);
 
 var authorize = function(req, res) {
-		service = oauth.service(clientService, tokenService, authorizationService, membershipService, 3600);
-		var oauthUri = service.authorizeRequest(req, '123');
+		var oauthUri = service.authorizeRequest(req, 'userid');
 		res.write(util.inspect(oauthUri));
 		res.end();
 	},
 	grantToken = function(req, res) {
-		service = oauth.service(clientService, tokenService, authorizationService, membershipService, 3600);
-		var token = service.grantAccessToken(req, '123');
+		var token = service.grantAccessToken(req, 'userid');
 		res.write(util.inspect(token));
+		res.end();
+	},
+	apiEndpoint = function(req, res) {
+		var validationResponse = service.validateAccessToken(req);
+		res.write(util.inspect(validationResponse));
 		res.end();
 	};
 
@@ -58,6 +68,7 @@ var server = connect()
 		.use(connect.query())
 		.use(connect.bodyParser())
 		.use('/oauth/authorize', authorize)
-		.use('/oauth/token', grantToken).listen(8001);
+		.use('/oauth/token', grantToken)
+		.use('/api/test', apiEndpoint).listen(8001);
 
 console.log('listening on port 8001');
