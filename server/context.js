@@ -1,6 +1,4 @@
-var util = require('util');
-
-exports.httpOAuthContext = function (req)
+var httpOAuthContext = function (req)
 {
 	var getParam = function(paramName) {
 		if (typeof req.query[paramName] !== undefined)
@@ -27,3 +25,5 @@ exports.httpOAuthContext = function (req)
 		accessToken: getParam('access_token')
 	};
 };
+
+exports.httpOAuthContext = httpOAuthContext;

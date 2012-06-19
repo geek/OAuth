@@ -40,26 +40,26 @@ var authCodes = {},
 		}
 	},
 	membershipService = {
-		areUserCredentialsValid: function(usernId, password) {
+		areUserCredentialsValid: function(userId, password) {
 			return true;
 		}
 	},
 	supportedScopes = [ 'profile', 'status', 'avatar'],
 	expiresIn = 3600,
-	service = oauth.service(clientService, tokenService, authorizationService, membershipService, expiresIn, supportedScopes);
+	oauthServer = new oauth.Server(clientService, tokenService, authorizationService, membershipService, expiresIn, supportedScopes);
 
 var authorize = function(req, res) {
-		var oauthUri = service.authorizeRequest(req, 'userid');
+		var oauthUri = oauthServer.authorizeRequest(req, 'userid');
 		res.write(util.inspect(oauthUri));
 		res.end();
 	},
 	grantToken = function(req, res) {
-		var token = service.grantAccessToken(req, 'userid');
+		var token = oauthServer.grantAccessToken(req, 'userid');
 		res.write(util.inspect(token));
 		res.end();
 	},
 	apiEndpoint = function(req, res) {
-		var validationResponse = service.validateAccessToken(req);
+		var validationResponse = oauthServer.validateAccessToken(req);
 		res.write(util.inspect(validationResponse));
 		res.end();
 	};
