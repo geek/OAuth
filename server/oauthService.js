@@ -25,54 +25,71 @@ function Server(clientService, tokenService, authorizationService, membershipSer
 	};
 };
 
-Server.prototype.authorizeRequest = function(req, userId) {
+Server.prototype.authorizeRequest = function(req, userId, cb) {
+	var self = this,
+		context = httpOAuthContext(req);
+	if (!context || !context.responseType)
+		return cb(errors.invalidRequest(context.state));
+	else if (!oauthUtil.isAllowedResponseType(context.responseType))
+		return cb(errors.unsupportedResponseType(context.state));
+		
+
+	var next = function(client) {
+		self._authorizeRequest(req,userId,client,cb)
+	}
+	self.clientService.getById(context.clientId, next);
+
+};
+
+Server.prototype._authorizeRequest = function(req,userId,client,cb) {
 	var self = this,
 		context = httpOAuthContext(req);
 
-	if (!context || !context.responseType)
-		return errors.invalidRequest(context.state);
-	else if (!oauthUtil.isAllowedResponseType(context.responseType))
-		return errors.unsupportedResponseType(context.state);
-		
-	var client = self.clientService.getById(context.clientId);
 	if (!client)
-		return errors.invalidClient(context);
+		return cb(errors.invalidClient(context));
 	else if (!context.redirectUri || !client.isValidRedirectUri(context.redirectUri))
-		return errors.redirectUriMismatch(context.state);
+		return cb(errors.redirectUriMismatch(context.state));
 
 	if (!self.isSupportedScope(context.scope))
-		return errors.invalidScope(context.state);
+		return cb(errors.invalidScope(context.state));
 
 	var token = oauthUtil.isTokenResponseType(context.responseType) ? self.tokenService.generateToken() : null,
 		code = oauthUtil.isCodeResponseType(context.responseType) ? self.tokenService.generateToken() : null;
 
-	if (!code)
+	var next = function() {
+		var authorizationUrl = oauthUtil.buildAuthorizationUri(context.redirectUri, code, token, context.scope, context.state, self.expiresIn);
+		if (typeof cb == "function") {
+			cb({
+				redirectUri: authorizationUrl,
+				state: context.state
+			});
+		}
+	};
+
+	if (code)
 		self.authorizationService.saveAuthorizationCode({
 			code: code,
 			redirectUri: context.redirectUri,
-			clientId: client.Id,
+			clientId: client.id,
 			timestamp: new Date(),
 			userId: userId
-		});
-	else if (!token)
+		},next);
+	else if (token)
 		self.authorizationService.saveAccessToken({
 			accessToken: token,
-			expiresDate: this.getExpiresDate()
-		});
+			expiresDate: this.getExpiresDate(),
+			clientId: client.id,
+			timestamp: new Date(),
+			userId: userId
+		},next);
 
-	var authorizationUrl = oauthUtil.buildAuthorizationUri(context.redirectUri, code, token, context.scope, context.state, self.expiresIn);
-
-	return {
-		redirectUri: authorizationUrl,
-		state: context.state
-	};
 };
 
-Server.prototype.grantAccessToken = function(req, userId) {
+Server.prototype.grantAccessToken = function(req, userId,cb) {
 	var self = this,
 		context = httpOAuthContext(req);
 
-	var getTokenData = function() {
+	var getTokenData = function(tokenCallBack) {
 		var grantType = context.grantType.toLowerCase();
 		var generateTokenData = function(includeRefreshToken) {
 			var tokenData = {
@@ -87,67 +104,82 @@ Server.prototype.grantAccessToken = function(req, userId) {
 		};
 
 		if (grantType === grantTypes.authorizationCode) {
-			if (oauthUtil.isValidAuthorizationCode(context, self.authorizationService))
-				return generateTokenData(true);
-			else
-				return errors.invalidAuthorizationCode(context.state);
+			oauthUtil.isValidAuthorizationCode(context, self.authorizationService,function(codeData) {
+				if (codeData)
+					tokenCallBack(out);		
+				else
+					tokenCallBack(errors.invalidAuthorizationCode(context.state));
+			});
 		}
 		else if (grantType === grantTypes.implicit)
-			return errors.cannotRequestImplicitToken(context.state);
+			tokenCallBack(errors.cannotRequestImplicitToken(context.state));
 		else if (grantType === grantTypes.password) {
-			if (self.membershipService.areUserCredentialsValid(userId, context.password))
-				return generateTokenData(true);
-			else
-				return errors.invalidUserCredentials(context.state);
+			self.membershipService.areUserCredentialsValid(userId, context.password,function(valid) {
+				if (valid)
+					tokenCallBack(generateTokenData(true));
+				else
+					tokenCallBack(errors.invalidUserCredentials(context.state));
+			});
 		}
 		else if (grantType === grantTypes.clientCredentials)
-			return generateTokenData(false);
-		
-		return errors.unsupportedGrantType(context.state);
+			tokenCallBack(generateTokenData(false));
+		else
+			tokenCallBack(errors.unsupportedGrantType(context.state));
 	};
 
 	if (!context.grantType)
-		return errors.invalidRequest(context.state);
+		cb(errors.invalidRequest(context.state));
 	else if (!grantTypes.isAllowed(context.grantType, self))
-		return errors.unsupportedGrantType(context.state);
+		cb(errors.unsupportedGrantType(context.state));
 	
-	var client = self.clientService.getById(context.clientId);
-	if (!client)
-		return errors.invalidClient(context);
-	else if (!grantTypes.isAllowedForClient(client.grantTypes, context.grantType))
-		return errors.unsupportedGrantTypeForClient(context.state);
 
-	if (grantTypes.requiresClientSecret(context.grantType) && context.clientSecret !== client.secret)
-		return errors.clientCredentialsInvalid(context.state);
+	var tokenData={};
+	var done = function() {
+		cb(tokenData);
+	};
 
-	var tokenData = getTokenData();
-	if (!tokenData.error)
-		self.authorizationService.saveAccessToken(tokenData);
+	var tokenDataCallback = function(token) {
+		tokenData = token;
+		if (!tokenData.error)
+			self.authorizationService.saveAccessToken(token,done);
+	};
 	
-	return tokenData;
+	var clientServiceCallback = function(client) {
+		if (!client)
+			cb(errors.invalidClient(context));
+		else if (!grantTypes.isAllowedForClient(client.grantTypes, context.grantType))
+			cb(errors.unsupportedGrantTypeForClient(context.state));
+
+		if (grantTypes.requiresClientSecret(context.grantType) && context.clientSecret !== client.secret)
+			cb(errors.clientCredentialsInvalid(context.state));
+		
+		getTokenData(tokenDataCallback);
+	};
+	self.clientService.getById(context.clientId,clientServiceCallback);
 };
 
-Server.prototype.validateAccessToken = function(req) {
+Server.prototype.validateAccessToken = function(req,cb) {
 	var self = this,
 		context = httpOAuthContext(req);
 
-	var tokenData = self.authorizationService.getAccessToken(context.accessToken);
-
-	if (!tokenData || !tokenData.accessToken)
-		return {
-			isValid: false,
-			error: 'Access token not found'
-		};
-
-	if (util.isExpired(tokenData.expiresDate)) 
-		return {
-			isValid: false,
-			error: 'Access token has expired'
-		};
-
-	return {
-		isValid: true
+	var next = function(tokenData) {
+		if (!tokenData || !tokenData.accessToken)
+			cb({
+				isValid: false,
+				error: 'Access token not found'
+			});
+		else if (oauthUtil.isExpired(tokenData.expiresDate)) 
+			cb({
+				isValid: false,
+				error: 'Access token has expired'
+			});
+		else 
+			cb({
+				isValid: true,
+				data:tokenData
+			});
 	};
+	self.authorizationService.getAccessToken(context.accessToken,next);
 };
 
 exports.Server = Server;
