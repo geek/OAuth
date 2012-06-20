@@ -139,7 +139,7 @@ Server.prototype.validateAccessToken = function(req) {
 			error: 'Access token not found'
 		};
 
-	if (util.isExpired(tokenData.expiresDate)) 
+	if (oauthUtil.isExpired(tokenData.expiresDate)) 
 		return {
 			isValid: false,
 			error: 'Access token has expired'
