@@ -9,7 +9,7 @@
     "type" : "git",
     "url": "git://github.com/wpreul/oauth.git"
   },
-  "bugs": { "url": "https://github.com/wpreu/oauth/issues" },
+  "bugs": { "url": "https://github.com/wpreul/oauth/issues" },
   "main": "app.js",
   "dependencies": {},
   "devDependencies": {},
