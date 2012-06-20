@@ -70,7 +70,7 @@ Server.prototype._authorizeRequest = function(req,userId,client,cb) {
 		self.authorizationService.saveAuthorizationCode({
 			code: code,
 			redirectUri: context.redirectUri,
-			clientId: client.Id,
+			clientId: client.id,
 			timestamp: new Date(),
 			userId: userId
 		},next);
