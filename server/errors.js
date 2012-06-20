@@ -89,5 +89,6 @@ exports.errors = {
 	clientCredentialsInvalid: clientCredentialsInvalid,
 	userCredentialsInvalid: userCredentialsInvalid,
 	unsupportedGrantType: unsupportedGrantType,
-	unsupportedGrantTypeForClient: unsupportedGrantTypeForClient
+	unsupportedGrantTypeForClient: unsupportedGrantTypeForClient,
+	invalidClient: invalidClient
 };
