@@ -69,6 +69,12 @@ var invalidRequest = function(state) {
 			error: 'You cannot request a token from this endpoint using the implicit grant type',
 			state: state
 		};
+	},
+	invalidClient = function(state) {
+		return {
+			error: 'The client credentials provided are invalid',
+			state: state
+		};
 	};
 
 exports.errors = {
