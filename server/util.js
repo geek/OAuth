@@ -38,7 +38,10 @@ isTokenResponseType = function(responseType) {
 
 isValidAuthorizationCode = function(context, authorizationService,cb) {
 	authorizationService.getAuthorizationCode(context.code,function(authorizationCode) {
-		cb(authorizationCode && (context.code === authorizationCode.code) && !isExpired(authorizationCode.expiresDate));
+		if (authorizationCode && (context.code === authorizationCode.code) && !isExpired(authorizationCode.expiresDate))
+			cb(authorizationCode);
+		else
+			cb(false);
 	});
 },
 

@@ -77,8 +77,12 @@ Server.prototype._authorizeRequest = function(req,userId,client,cb) {
 	else if (token)
 		self.authorizationService.saveAccessToken({
 			accessToken: token,
-			expiresDate: this.getExpiresDate()
+			expiresDate: this.getExpiresDate(),
+			clientId: client.id,
+			timestamp: new Date(),
+			userId: userId
 		},next);
+
 };
 
 Server.prototype.grantAccessToken = function(req, userId,cb) {
@@ -100,9 +104,9 @@ Server.prototype.grantAccessToken = function(req, userId,cb) {
 		};
 
 		if (grantType === grantTypes.authorizationCode) {
-			oauthUtil.isValidAuthorizationCode(context, self.authorizationService,function(valid) {
-				if (valid)				
-					tokenCallBack(generateTokenData(true));
+			oauthUtil.isValidAuthorizationCode(context, self.authorizationService,function(codeData) {
+				if (codeData)
+					tokenCallBack(out);		
 				else
 					tokenCallBack(errors.invalidAuthorizationCode(context.state));
 			});
@@ -171,7 +175,8 @@ Server.prototype.validateAccessToken = function(req,cb) {
 			});
 		else 
 			cb({
-				isValid: true
+				isValid: true,
+				data:tokenData
 			});
 	};
 	self.authorizationService.getAccessToken(context.accessToken,next);
