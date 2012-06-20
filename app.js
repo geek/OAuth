@@ -1,3 +1,3 @@
-var Server = require('./server/oauthService').Server;
+var AuthServer = require('./authServer/').AuthServer;
 
-exports.Server = Server;
+exports.AuthServer = AuthServer;
