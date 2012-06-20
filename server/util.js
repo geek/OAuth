@@ -36,10 +36,10 @@ isTokenResponseType = function(responseType) {
 	return responseType === 'token' || responseType === 'code_and_token';
 },
 
-isValidAuthorizationCode = function(context, authorizationService) {
-	var authorizationCode = authorizationService.getAuthorizationCode(context.code);
-	
-	return authorizationCode && (context.code === authorizationCode.code) && !isExpired(authorizationCode.expiresDate);
+isValidAuthorizationCode = function(context, authorizationService,cb) {
+	authorizationService.getAuthorizationCode(context.code,function(authorizationCode) {
+		cb(authorizationCode && (context.code === authorizationCode.code) && !isExpired(authorizationCode.expiresDate));
+	});
 },
 
 buildAuthorizationUri = function(redirectUri, code, token, scope, state, expiresIn) {
