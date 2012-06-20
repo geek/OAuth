@@ -46,7 +46,7 @@ Server.prototype.authorizeRequest = function(req, userId) {
 	var token = oauthUtil.isTokenResponseType(context.responseType) ? self.tokenService.generateToken() : null,
 		code = oauthUtil.isCodeResponseType(context.responseType) ? self.tokenService.generateToken() : null;
 
-	if (!code)
+	if (code)
 		self.authorizationService.saveAuthorizationCode({
 			code: code,
 			redirectUri: context.redirectUri,
@@ -54,7 +54,7 @@ Server.prototype.authorizeRequest = function(req, userId) {
 			timestamp: new Date(),
 			userId: userId
 		});
-	else if (!token)
+	else if (token)
 		self.authorizationService.saveAccessToken({
 			accessToken: token,
 			expiresDate: this.getExpiresDate()
