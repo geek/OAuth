@@ -24,7 +24,7 @@ var authCodes = {},
 		}
 	},
 	authorizationService = {
-		saveAuthorizationCode: function(codeDate) {
+		saveAuthorizationCode: function(codeData) {
 			authCodes[codeData.code] = codeData;
 		},
 		saveAccessToken: function(tokenData) {
@@ -34,8 +34,6 @@ var authCodes = {},
 			return authCodes[code]; 
 		},
 		getAccessToken: function(token) {
-			console.log(util.inspect(accessTokens));
-			
 			return accessTokens[token];
 		}
 	},
@@ -45,11 +43,13 @@ var authCodes = {},
 		}
 	},
 	supportedScopes = [ 'profile', 'status', 'avatar'],
-	expiresIn = 3600,
+	expiresIn = 36000000000,
 	authServer = new oauth.AuthServer(clientService, tokenService, authorizationService, membershipService, expiresIn, supportedScopes);
 
 var authorize = function(req, res) {
 		var oauthUri = authServer.authorizeRequest(req, 'userid');
+		console.log('gothere finaly')
+		console.log(oauthUri);
 		res.write(util.inspect(oauthUri));
 		res.end();
 	},
@@ -72,3 +72,7 @@ var server = connect()
 		.use('/api/test', apiEndpoint).listen(8001);
 
 console.log('listening on port 8001');
+
+// http://localhost:8001/oauth/authorize?grant_type=authorization_code&client_id=1&client_secret=what&response_type=code&redirect_uri=http%3A%2F%2Fcnn.com
+// http://localhost:8001/oauth/token?grant_type=authorization_code&client_id=1&client_secret=what&code=1beebb9f-4447-4a37-9bf6-12ec3f784b2f
+// http://localhost:8001/api/test?access_token=4bbc931b-37f7-417d-9460-830cfbd3b084

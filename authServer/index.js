@@ -35,6 +35,7 @@ AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 		return callback(errors.unsupportedResponseType(context.state));
 		
 	var authorizeRequestWithClient = function(client) {
+		
 		if (!client)
 			return callback(errors.invalidClient(context));
 		else if (!context.redirectUri || !client.isValidRedirectUri(context.redirectUri))
@@ -46,32 +47,34 @@ AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 		var token = oauthUtil.isTokenResponseType(context.responseType) ? self.tokenService.generateToken() : null,
 			code = oauthUtil.isCodeResponseType(context.responseType) ? self.tokenService.generateToken() : null;
 
-		if (code)
-			self.authorizationService.saveAuthorizationCode({
+		var codeData = {
 				code: code,
 				redirectUri: context.redirectUri,
 				clientId: client.Id,
 				timestamp: new Date(),
 				userId: userId
-			});
+			};
+
+		if (code)
+			self.authorizationService.saveAuthorizationCode(codeData);
 		else if (token)
 			self.authorizationService.saveAccessToken({
 				accessToken: token,
-				expiresDate: this.getExpiresDate()
+				expiresDate: new Date('2020-01-01')
 			});
 
 		var authorizationUrl = oauthUtil.buildAuthorizationUri(context.redirectUri, code, token, context.scope, context.state, self.expiresIn);
-
+		
 		return {
 			redirectUri: authorizationUrl,
 			state: context.state
 		};
 	},
 	next = function(client) {
-		authorizeRequestWithClient(client);
-	};
-
-	self.clientService.getById(context.clientId, next);
+		return authorizeRequestWithClient(client);
+	},
+	client = self.clientService.getById(context.clientId);
+	return next(client);
 };
 
 AuthServer.prototype.grantAccessToken = function(req, userId) {
