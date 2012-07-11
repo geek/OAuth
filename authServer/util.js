@@ -28,10 +28,11 @@ isTokenResponseType = function(responseType) {
 	return responseType === 'token' || responseType === 'code_and_token';
 },
 
-isValidAuthorizationCode = function(context, authorizationService) {
-	var authorizationCode = authorizationService.getAuthorizationCode(context.code);
-	
-	return authorizationCode && (context.code === authorizationCode.code) && !isExpired(authorizationCode.expiresDate);
+isValidAuthorizationCode = function(context, authorizationService, callback) {
+	authorizationService.getAuthorizationCode(context.code, function(err, authorizationCode){
+		if(err) return callback(err);
+		callback(null, authorizationCode && (context.code === authorizationCode.code) && !isExpired(authorizationCode.expiresDate));
+	});
 },
 
 buildAuthorizationUri = function(redirectUri, code, token, scope, state, expiresIn) {

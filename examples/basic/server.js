@@ -14,8 +14,8 @@ var authCodes = {},
 		}
 	},
 	clientService = {
-		getById: function(id) {
-			return clients[id];
+		getById: function(id, cb) {
+			cb(null, clients[id]);
 		}
 	},
 	tokenService = {
@@ -24,22 +24,24 @@ var authCodes = {},
 		}
 	},
 	authorizationService = {
-		saveAuthorizationCode: function(codeData) {
+		saveAuthorizationCode: function(codeData, cb) {
 			authCodes[codeData.code] = codeData;
+			cb(null, codeData);
 		},
-		saveAccessToken: function(tokenData) {
+		saveAccessToken: function(tokenData, cb) {
 			accessTokens[tokenData.accessToken] = tokenData;
+			cb(null, tokenData);
 		},
-		getAuthorizationCode: function(code) {
-			return authCodes[code]; 
+		getAuthorizationCode: function(code, cb) {
+			cb(null, authCodes[code]); 
 		},
-		getAccessToken: function(token) {
-			return accessTokens[token];
+		getAccessToken: function(token, cb) {
+			cb(null, accessTokens[token]);
 		}
 	},
 	membershipService = {
-		areUserCredentialsValid: function(userId, password) {
-			return true;
+		areUserCredentialsValid: function(userId, password, cb) {
+			cb(null, true);
 		}
 	},
 	supportedScopes = [ 'profile', 'status', 'avatar'],
@@ -47,22 +49,23 @@ var authCodes = {},
 	authServer = new oauth.AuthServer(clientService, tokenService, authorizationService, membershipService, expiresIn, supportedScopes);
 
 var authorize = function(req, res) {
-		var oauthUri = authServer.authorizeRequest(req, 'userid');
-		console.log('gothere finaly')
-		console.log(oauthUri);
-		res.write(util.inspect(oauthUri));
+	authServer.authorizeRequest(req, 'userid', function(err, result){
+		res.write(util.inspect(result));
 		res.end();
-	},
-	grantToken = function(req, res) {
-		var token = authServer.grantAccessToken(req, 'userid');
-		res.write(util.inspect(token));
+	});		
+},
+grantToken = function(req, res) {
+	authServer.grantAccessToken(req, 'userid', function(err, result){
+		res.write(util.inspect(result));
 		res.end();
-	},
-	apiEndpoint = function(req, res) {
-		var validationResponse = authServer.validateAccessToken(req);
-		res.write(util.inspect(validationResponse));
+	});
+},
+apiEndpoint = function(req, res) {
+	authServer.validateAccessToken(req, function(err, result){
+		res.write(util.inspect(result));
 		res.end();
-	};
+	});
+};
 
 var server = connect()
 		.use(connect.query())
