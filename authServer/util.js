@@ -13,29 +13,34 @@ var doesArrayContain = function(arrayList, item) {
 },
 
 isExpired = function(expiresDate) {
-	return expiresDate < new Date();
+	return expiresDate < new Date().getTime();
 },
 
 isAllowedResponseType = function(responseType) {
-	return isCodeResponseType(responseType) || isTokenResponseType(responseType);
+	return isCodeResponseType(responseType) || isTokenResponseType(responseType) || isDeviceResponseType(responseType);
 },
 
 isCodeResponseType = function(responseType) {
-	return responseType === 'code' || responseType === 'code_and_token';
+	return responseType === 'code' || responseType === 'device_code' || responseType === 'code_and_token';
 },
 
 isTokenResponseType = function(responseType) {
 	return responseType === 'token' || responseType === 'code_and_token';
 },
 
-isValidAuthorizationCode = function(context, authorizationService, callback) {
+isDeviceResponseType = function(responseType) {
+	return responseType === 'device_code';
+},
+
+isValidAuthorizationCode = function(context, authorizationService, cb) {
 	authorizationService.getAuthorizationCode(context.code, function(err, authorizationCode){
-		if(err) return callback(err);
-		callback(null, authorizationCode && (context.code === authorizationCode.code) && !isExpired(authorizationCode.expiresDate));
+		if(err) return cb(err);
+		if(authorizationCode == undefined) return cb(err, false);
+		cb(err, authorizationCode && (context.code === authorizationCode.code) && !isExpired(authorizationCode.expiresDate));
 	});
 },
 
-buildAuthorizationUri = function(redirectUri, code, token, scope, state, expiresIn) {
+buildAuthorizationUri = function(context, code, token, expiresIn) {
 	var query = '';
 
 	if (code)
@@ -45,20 +50,33 @@ buildAuthorizationUri = function(redirectUri, code, token, scope, state, expires
 	if (expiresIn)
 		query += '&expires_in=' + expiresIn;
 
-	if (scope) {
+	if (context.scope) {
 		var scopeFormatted = '&scope=';
-		for(var i = 0; i < scope.length; i++) {
-			scopeFormatted += scope[i] + ',';
+		for(var i = 0; i < context.scope.length; i++) {
+			scopeFormatted += context.scope[i] + ',';
 		}
 
 		scopeFormatted = scopeFormatted.slice(0, scopeFormatted.length - 1);
 		query += scopeFormatted;
 	}
 
-	if (state)
-		query += '&state=' + state;
+	if (context.state)
+		query += '&state=' + context.state;
 
-	return redirectUri + '?' + query;
+	return {
+		redirect_uri: context.redirectUri + '?' + query,
+		state: context.state
+	}
+},
+
+buildDeviceCodeResponse = function(code, userCode, verificationUri, expiresIn, interval) {
+	return {
+		code: code,
+		user_code: userCode,
+		verification_uri: verificationUri,
+		expires_in: expiresIn,
+		interval: interval
+	}	
 },
 
 areClientCredentialsValid = function(client, context) {
@@ -72,3 +90,5 @@ exports.isCodeResponseType = isCodeResponseType;
 exports.isTokenResponseType = isTokenResponseType;
 exports.isValidAuthorizationCode = isValidAuthorizationCode;
 exports.buildAuthorizationUri = buildAuthorizationUri;
+exports.isDeviceResponseType = isDeviceResponseType;
+exports.buildDeviceCodeResponse = buildDeviceCodeResponse;

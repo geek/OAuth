@@ -1,3 +1,1 @@
-var AuthServer = require('./authServer/').AuthServer;
-
-exports.AuthServer = AuthServer;
+module.exports = require('./authServer/');
