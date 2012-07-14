@@ -45,10 +45,10 @@ AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 		if (!self.isSupportedScope(context.scope))
 			return callback(errors.invalidScope(context.state));
 
-		var token = oauthUtil.isTokenResponseType(context.responseType) ? self.tokenService.generateToken() : null,
-			code = oauthUtil.isCodeResponseType(context.responseType) ? self.tokenService.generateToken() : null;
-
-		var todos = 0;
+		var token = oauthUtil.isTokenResponseType(context.responseType) ? self.tokenService.generateToken() : null
+			, code = oauthUtil.isCodeResponseType(context.responseType) ? self.tokenService.generateToken() : null;
+			, todos = 0;
+			
 		if(code) todos++;
 		if(token) todos++;
 

@@ -45,7 +45,7 @@ var authCodes = {},
 		}
 	},
 	supportedScopes = [ 'profile', 'status', 'avatar'],
-	expiresIn = 36000000000,
+	expiresIn = 3600000,
 	authServer = new oauth.AuthServer(clientService, tokenService, authorizationService, membershipService, expiresIn, supportedScopes);
 
 var authorize = function(req, res) {
