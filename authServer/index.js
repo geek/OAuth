@@ -43,7 +43,9 @@ exports.authorizeRequest = function(context, userId, cb) {
 
 	// Find the requesting client
 	clientService.getById(context.clientId, function(err, client) {
+		console.log(err, client)
 		if(err) return cb(err);
+		if (!client) return cb(errors.unauthorizedClient(context.state));
 		authorizeRequestWithClient(client, context, userId, cb);
 	});
 };
@@ -61,7 +63,7 @@ exports.grantAccessToken = function(context, userId, cb) {
 
 		// Is there a client?
 		if (!client)
-			return cb(errors.invalidClient(context));
+			return cb(errors.unauthorizedClient(context.state));
 		// Can this client have these grant types?
 		else if (!grantTypes.isAllowedForClient(client.grantTypes, context.grantType))
 			return cb(errors.unsupportedGrantTypeForClient(context.state));
@@ -111,7 +113,7 @@ exports.deviceAuthStatus = function(context, cb) {
 		if(err) return cb(err);
 
 		// Is there a client?
-		if (!client) return cb(errors.invalidClient(context));
+		if (!client) return cb(errors.unauthorizedClient(context.state));
 
 		// Is the clients code valid?
 		oauthUtil.isValidAuthorizationCode(context, authorizationService, function(codeError, isValid){
