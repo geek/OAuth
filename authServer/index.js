@@ -170,7 +170,7 @@ function authorizeRequestWithClient(client, context, userId, cb) {
 	if (!client)
 		return cb(errors.invalidClient(context));
 	// If not a device code, is there a redirect URI to go to when done?
-	else if (!oauthUtil.isDeviceResponseType(context.responseType) && (!context.redirectUri || !client.isValidRedirectUri(context.redirectUri)))
+	else if (!oauthUtil.isDeviceResponseType(context.responseType) && !context.redirectUri)
 		return cb(errors.redirectUriMismatch(context.state));
 	// Do the scopes passed in fall withing the valid scopes?
 	if (!isSupportedScope(context.scope))
