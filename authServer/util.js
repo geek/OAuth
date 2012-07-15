@@ -21,7 +21,7 @@ isAllowedResponseType = function(responseType) {
 },
 
 isCodeResponseType = function(responseType) {
-	return responseType === 'code' || responseType === 'device_code' || responseType === 'code_and_token';
+	return responseType === 'code' || responseType === 'device_token' || responseType === 'code_and_token';
 },
 
 isTokenResponseType = function(responseType) {
@@ -29,7 +29,7 @@ isTokenResponseType = function(responseType) {
 },
 
 isDeviceResponseType = function(responseType) {
-	return responseType === 'device_code';
+	return responseType === 'device_token';
 },
 
 isValidAuthorizationCode = function(context, authorizationService, cb) {
@@ -46,7 +46,7 @@ buildAuthorizationUri = function(context, code, token, expiresIn) {
 	if (code)
 		query += 'code=' + code;
 	if (token)
-		query += '&access_token=' + token;
+		query += '&access_token=' + token.accessToken;
 	if (expiresIn)
 		query += '&expires_in=' + expiresIn;
 

@@ -10,6 +10,24 @@ exports.unauthorizedClient = function(state) {
 		state: state
 	};
 }
+exports.invalidUserCode = function(state) {
+	return {
+		error: 'Invalid user code',
+		state: state
+	};
+}
+exports.unauthorizedToken = function(state) {
+	return {
+		error: 'The access_token is not authorized.',
+		state: state
+	};
+}
+exports.expiredToken = function(state) {
+	return {
+		error: 'The access_token is expired.',
+		state: state
+	};
+}
 exports.accessDenied = function(state) {
 	return {
 		error: 'The resource owner or authorization server denied the request.',

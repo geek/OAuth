@@ -43,7 +43,6 @@ exports.authorizeRequest = function(context, userId, cb) {
 
 	// Find the requesting client
 	clientService.getById(context.clientId, function(err, client) {
-		console.log(err, client)
 		if(err) return cb(err);
 		if (!client) return cb(errors.unauthorizedClient(context.state));
 		authorizeRequestWithClient(client, context, userId, cb);
@@ -86,6 +85,7 @@ exports.grantAccessToken = function(context, userId, cb) {
 exports.acceptDevice = function(userId, userCode, cb) {
 	authorizationService.getUserCode(userCode, function(err, codeData) {
 		if(err) return cb(err);
+		if(!codeData) return cb(errors.invalidUserCode());
 		var tokenData = generateTokenData(codeData.clientId, userId, codeData.scope, false);
 		authorizationService.saveAccessToken(tokenData, function(saveError){
 			if(saveError)	return cb(saveError);
@@ -99,6 +99,7 @@ exports.acceptDevice = function(userId, userCode, cb) {
 exports.declineDevice = function(userId, userCode, cb) {
 	authorizationService.getUserCode(userCode, function(err, codeData) {
 		if(err) return cb(err);
+		if(!codeData) return cb(errors.invalidUserCode());
 		var tokenData = generateTokenData(codeData.clientId, userId, codeData.scope, false);
 		authorizationService.updateUserCode(codeData, cb)
 	});
@@ -110,16 +111,12 @@ exports.deviceAuthStatus = function(context, cb) {
 
 	// Find the client that is acting on behalf of the user
 	clientService.getById(context.clientId, function(err, client){
-		if(err) return cb(err);
-
-		// Is there a client?
-		if (!client) return cb(errors.unauthorizedClient(context.state));
-
+		if(err || !client) return cb(errors.unauthorizedClient(context.state));
+		
 		// Is the clients code valid?
 		oauthUtil.isValidAuthorizationCode(context, authorizationService, function(codeError, isValid){
 			if(codeError) return cb(codeError);
 			if(!isValid) return cb(errors.invalidAuthorizationCode(context.state));
-
 			// Find the usercode
 			authorizationService.getUserCodeByCode(context.code, function(userCodeError, codeData) {
 				if(userCodeError) return cb(userCodeError);
@@ -133,6 +130,7 @@ exports.deviceAuthStatus = function(context, cb) {
 					// get the access token
 					authorizationService.getAccessToken(codeData.accessToken, function(tokenErr, tokenData){
 						if(tokenErr) return cb(tokenErr);
+						if(!tokenData) return cb(errors.unauthorizedToken());
 						cb(null, createTokenResponse(tokenData));
 					});
 				} else {
@@ -146,23 +144,9 @@ exports.deviceAuthStatus = function(context, cb) {
 exports.validateAccessToken = function(context, cb) {
 	authorizationService.getAccessToken(context.accessToken, function(err, tokenData){
 		if(err) return cb(err);
-
-		// Not found
-		if (!tokenData || !tokenData.accessToken)
-			cb(err, {
-				isValid: false,
-				error: 'Access token not found'
-			});
-
-		// Expired token
-		if (oauthUtil.isExpired(tokenData.expiresDate)) 
-			cb(err, {
-				isValid: false,
-				error: 'Access token has expired'
-			});
-
-		// Good to go
-		cb(err, {isValid: true});
+		if(!tokenData || !tokenData.accessToken) return cb(errors.unauthorizedToken());
+		if (oauthUtil.isExpired(tokenData.expiresDate)) return cb(errors.expiredToken());
+		cb(err, true);
 	});
 };
 
@@ -183,7 +167,7 @@ function authorizeRequestWithClient(client, context, userId, cb) {
 		return deviceAuthStatus(context, cb);
 
 	// Generate all of the required stuff
-	var token = oauthUtil.isTokenResponseType(context.responseType) ? tokenService.generateToken() : null
+	var token = oauthUtil.isTokenResponseType(context.responseType) ? generateTokenData(client.id, userId, context.scope, false) : null
 		, code = oauthUtil.isCodeResponseType(context.responseType) ? tokenService.generateToken() : null
 		, userCode = oauthUtil.isDeviceResponseType(context.responseType) ? tokenService.generateUserCode() : null
 		, todos = 0;
@@ -191,15 +175,16 @@ function authorizeRequestWithClient(client, context, userId, cb) {
 	if(token) todos++;
 	if(userCode) todos++;
 
+
 	// Because there may be multiple async items that need to be saved, wait until they are all done
 	var done = waitress(todos, function(err) {
-	  if (err) cb(err);
+	  if (err) return cb(err);
+
 	  // If this is responding to a device code request
-	  if(oauthUtil.isDeviceResponseType(context.responseType)) {
+	  if(oauthUtil.isDeviceResponseType(context.responseType))
 	  	cb(null, oauthUtil.buildDeviceCodeResponse(code, userCode, deviceVerificationUri, deviceCodeExpiresIn, devicePollInterval));
-	  } else { // Responding to all other requests
+	  else // Responding to all other requests
 		  cb(null, oauthUtil.buildAuthorizationUri(context, code, token, expiresIn));
-	  }
 	});
 
 	// save user code
@@ -234,10 +219,7 @@ function saveUserCode(context, client, code, userCode, cb) {
 
 // Formats and saves an access token request
 function saveAccessToken(token, cb) {
-	authorizationService.saveAccessToken({
-		accessToken: token,
-		expiresDate: getExpiresDate()
-	}, cb);
+	authorizationService.saveAccessToken(token, cb);
 }
 
 // Formats and saves a code request
@@ -327,6 +309,7 @@ function createTokenResponse(tokenData) {
 
 // Creates a token
 function generateTokenData(clientId, userId, scope, includeRefresh) {
+	scope = scope || [];
 	// Create the token obj
 	var tokenData = {
 		accessToken: tokenService.generateToken(),
