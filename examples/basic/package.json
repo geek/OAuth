@@ -1,8 +1,7 @@
 {
   "author": "Wyatt Preul <wpreul@gmail.com> (http://kittenbubbles.com)",
-  "name": "auth-server",
-  "description": "OAuth Server for v2.26 of spec",
-  "keywords": ["oauth", "auth server"],
+  "description": "Basic example of using auth-server",
+  "name": "basic-auth-server-example",
   "version": "2.0.26",
   "homepage": "https://github.com/wpreul/oauth",
   "repository": {
@@ -10,18 +9,15 @@
     "url": "git://github.com/wpreul/oauth.git"
   },
   "bugs": { "url": "https://github.com/wpreul/oauth/issues" },
-  "main": "./authServer/",
-  "dependencies": {},
-  "devDependencies": {
-    "chai": "*",
-    "mocha": "*"
+  "main": "server.js",
+  "dependencies": {
+    "connect": "*",
+    "node-uuid": "*"
   },
+  "devDependencies": { },
   "optionalDependencies": {},
   "engines": {
     "node": "*"
-  },
-  "directories": {
-    "authServer": "./authServer"
   },
   "licenses": [
   {

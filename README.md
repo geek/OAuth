@@ -8,7 +8,7 @@ This is a server implementation for the [v2-26 OAuth](http://tools.ietf.org/html
 ## Install
 
 You can install using npm:
-  auth-server
+  'npm install auth-server'
 
 I did have this published at OAuth, but after unpublishing the previous version npm wouldn't allow me to publish under this same name.  It looks like packages must be completely lowercase now :(
 
@@ -46,3 +46,15 @@ You will need to construct the OAuth object by passing in the following paramete
 ## Example
 
 Please refer to the examples folder for a demonstration of using the server.  The example uses connect, but the AuthServer doesn't actually have a dependency on anything outside of what ships with node.
+
+To use the basic example please navigate into the folder and run 'npm install'  This will download and install any mising modules.  Also, you may need to run 'npm install auth-server' in the basic folder.  For development I have used 'npm link' instead of using the package posted at npm.  Below are some manual steps you can run to check the authorization code grant type.
+
+1. Make a get request to 'http://localhost:8001/oauth/authorize?client_id=1&response_type=code&redirect_uri=http://google.com&scope=profile'
+2. Using the output from #1 make another request with the code to 'http://localhost:8001/oauth/token?client_id=1&grant_type=authorization_code&code=[THE CODE FROM STEP 1]&client_secret=what'
+3. Using curl make a POST request with the Authorization header passing in the access token: 'curl http://localhost:8001/api/test -d "" -H "Authorization: Bearer [ACCESS TOKEN GOES HERE]"'
+
+## Spec discussion
+
+1. In the Access Token Request section (http://tools.ietf.org/html/draft-ietf-oauth-v2-29#section-4.1.3) of the latest spec it does state that a redirect_uri is required when making a request for an access_token but then it also states that the client must authenticate if it is confidential.  Since the authorization code grant type is for confidential clients this means that the expectation is for the client to both authenticate (pass id and secret) as well as the redirect_uri.  I disagree, this is obvious overkill.  Therefore, auth-server only expects that the client authenticate when requesting an access token using authorization code grant type.
+
+2. It is assumed that by default you will be using the bearer token type.  This requires that all requests to your API to pass an Authorization header using Bearer as the type.  If you want to override this you are free to, but I think it is a good default to use.

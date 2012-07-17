@@ -8,6 +8,25 @@ exports.httpOAuthContext = function (req) {
 			return null;
 	};
 
+	function getAccessToken() {
+		if (!req || !req.headers || !req.headers.authorization)
+			return null;
+
+		var authHeader = req.headers.authorization,
+		 	startIndex = authHeader.toLowerCase().indexOf('bearer ');
+
+		if (startIndex === -1)
+			return null;
+
+		var bearer = authHeader.substring(startIndex + 7),
+			spaceIndex = bearer.indexOf(' ');
+
+		if (spaceIndex > 0)
+			bearer = bearer.substring(0, spaceIndex);
+
+		return bearer;
+	};
+
 	return req ? {
 		responseType: getParam('response_type'),
 		clientId: getParam('client_id'),
@@ -18,6 +37,6 @@ exports.httpOAuthContext = function (req) {
 		password: getParam('password'),
 		scope: getParam('scope') ? getParam('scope').split(',') : null,
 		redirectUri: getParam('redirect_uri'),
-		accessToken: getParam('access_token')
+		accessToken: getAccessToken()
 	} : null;
 };

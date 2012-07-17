@@ -1,7 +1,7 @@
 var httpOAuthContext = require('./context').httpOAuthContext,
 	errors = require('./errors'),
 	grantTypes = require('./grantTypes'),
-	oauthUtil = require('./util');
+	authUtil = require('./util');
 
 function AuthServer(clientService, tokenService, authorizationService, membershipService, expiresIn, supportedScopes) {
 	this.clientService = clientService;
@@ -31,7 +31,7 @@ AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 
 	if (!context || !context.responseType)
 		return callback(errors.invalidRequest(context.state));
-	else if (!oauthUtil.isAllowedResponseType(context.responseType))
+	else if (!authUtil.isAllowedResponseType(context.responseType))
 		return callback(errors.unsupportedResponseType(context.state));
 		
 	var authorizeRequestWithClient = function(client) {
@@ -43,11 +43,11 @@ AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 		if (!self.isSupportedScope(context.scope))
 			return callback(errors.invalidScope(context.state));
 
-		var token = oauthUtil.isTokenResponseType(context.responseType) ? self.tokenService.generateToken() : null,
-			code = oauthUtil.isCodeResponseType(context.responseType) ? self.tokenService.generateToken() : null,
+		var token = authUtil.isTokenResponseType(context.responseType) ? self.tokenService.generateToken() : null,
+			code = authUtil.isCodeResponseType(context.responseType) ? self.tokenService.generateToken() : null,
 			finalResponse = function() {
 				var response = { 
-					redirectUri: oauthUtil.buildAuthorizationUri(context.redirectUri, code, token, context.scope, context.state, self.expiresIn) 
+					redirectUri: authUtil.buildAuthorizationUri(context.redirectUri, code, token, context.scope, context.state, self.expiresIn) 
 				};
 			
 				if (context.state)
@@ -81,11 +81,11 @@ AuthServer.prototype.getTokenData = function(context, callback) {
 	var self = this,
 		grantType = context.grantType.toLowerCase(),
 		generateTokenDataRef = function(includeRefreshToken) {
-			return oauthUtil.generateTokenData(includeRefreshToken, self.tokenService.generateToken, self.getExpiresDate);
+			return authUtil.generateTokenData(includeRefreshToken, self.tokenService.generateToken, self.getExpiresDate);
 		};
 
 	if (grantType === grantTypes.authorizationCode) {
-		oauthUtil.isValidAuthorizationCode(context, self.authorizationService, function(isValidAuthCode) {
+		authUtil.isValidAuthorizationCode(context, self.authorizationService, function(isValidAuthCode) {
 			var tokenData = isValidAuthCode ? generateTokenDataRef(true) : errors.invalidAuthorizationCode(context.state);
 			return callback(tokenData);
 		});
@@ -143,7 +143,7 @@ AuthServer.prototype.validateAccessToken = function(req, callback) {
 				isValid: false,
 				error: 'Access token not found'
 			};
-		else if (oauthUtil.isExpired(tokenData.expiresDate)) 
+		else if (authUtil.isExpired(tokenData.expiresDate)) 
 			response = {
 				isValid: false,
 				error: 'Access token has expired'

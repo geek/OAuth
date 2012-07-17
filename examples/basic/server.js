@@ -1,4 +1,4 @@
-var oauth = require('../../app'),
+var oauth = require('auth-server'),
 	connect = require('connect'),
 	util = require('util'),
 	uuid = require('node-uuid');

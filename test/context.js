@@ -12,8 +12,10 @@ describe('httpOAuthContext', function() {
 				state: 'mystate',
 				password: 'mypassword',
 				scope: 'scope1,scope2,scope3',
-				redirect_uri: 'http://someredirect.com',
-				access_token: 'myaccesstoken'
+				redirect_uri: 'http://someredirect.com'
+			},
+			headers: {
+				authorization: 'Authorization: Bearer myaccesstoken'
 			}
 		};
 
