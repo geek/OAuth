@@ -3,12 +3,12 @@
 
 ## Description
 
-This is a server implementation for the [v2-26 OAuth](http://tools.ietf.org/html/draft-ietf-oauth-v2-26) specification.  There is an example implementation in the examples folder for the server.  Eventually, I will add a client implementation for the latest specification, which is why it is simply named OAuth at this point. The four main grant types are all supported.  This means that you can allow implicit, client_credentials, authorization_code, and password grants.  It is up to you to implement the authorization page for a user.  This is generally found at /oauth/authorize.  It is also up to you to implement a service for storing client details and access tokens.  The OAuth provider assumes nothing about your server and therefore has no hard dependencies on anything outside of node.  That being said, there is the expectation that the query and body object you pass to OAuth is an object and not in its original string state.  You can achieve this easily by using the connect query middleware, as the example application shows.
+This is an authorization server implementation for the [v2-29 OAuth](http://tools.ietf.org/html/draft-ietf-oauth-v2-29) specification.  There is an example implementation in the examples folder for the server.  Eventually, I will add a client implementation for the latest specification, which is why it is simply named OAuth at this point. The four main grant types are all supported.  This means that you can allow implicit, client_credentials, authorization_code, and password grants.  It is up to you to implement the authorization page for a user.  This is generally found at /oauth/authorize.  It is also up to you to implement a service for storing client details and access tokens.  The OAuth provider assumes nothing about your server and therefore has no hard dependencies on anything outside of node.  That being said, there is the expectation that the query and body object you pass to OAuth is an object and not in its original string state.  You can achieve this easily by using the connect query middleware, as the example application shows.
 
 ## Install
 
 You can install using npm:
-  'npm install auth-server'
+```npm install auth-server```
 
 I did have this published at OAuth, but after unpublishing the previous version npm wouldn't allow me to publish under this same name.  It looks like packages must be completely lowercase now :(
 
@@ -47,11 +47,11 @@ You will need to construct the OAuth object by passing in the following paramete
 
 Please refer to the examples folder for a demonstration of using the server.  The example uses connect, but the AuthServer doesn't actually have a dependency on anything outside of what ships with node.
 
-To use the basic example please navigate into the folder and run 'npm install'  This will download and install any mising modules.  Also, you may need to run 'npm install auth-server' in the basic folder.  For development I have used 'npm link' instead of using the package posted at npm.  Below are some manual steps you can run to check the authorization code grant type.
+To use the basic example please navigate into the folder and run ```npm install```  This will download and install any mising modules.  Also, you may need to run ```npm install auth-server``` in the basic folder.  For development I have used 'npm link' instead of using the package posted at npm.  Below are some manual steps you can run to check the authorization code grant type.
 
-1. Make a get request to 'http://localhost:8001/oauth/authorize?client_id=1&response_type=code&redirect_uri=http://google.com&scope=profile'
-2. Using the output from #1 make another request with the code to 'http://localhost:8001/oauth/token?client_id=1&grant_type=authorization_code&code=[THE CODE FROM STEP 1]&client_secret=what'
-3. Using curl make a POST request with the Authorization header passing in the access token: 'curl http://localhost:8001/api/test -d "" -H "Authorization: Bearer [ACCESS TOKEN GOES HERE]"'
+1. Make a get request to ```http://localhost:8001/oauth/authorize?client_id=1&response_type=code&redirect_uri=http://google.com&scope=profile```
+2. Using the output from #1 make another request with the code to ```http://localhost:8001/oauth/token?client_id=1&grant_type=authorization_code&code=[THE CODE FROM STEP 1]&client_secret=what```
+3. Using curl make a POST request with the Authorization header passing in the access token: ```curl http://localhost:8001/api/test -d "" -H "Authorization: Bearer [ACCESS TOKEN GOES HERE]"```
 
 ## Spec discussion
 
