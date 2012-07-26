@@ -1,8 +1,8 @@
 exports.httpOAuthContext = function (req) {
 	function getParam(paramName) {
-		if (req.query && typeof req.query[paramName] !== undefined)
+		if (req.query && typeof req.query[paramName] !== 'undefined')
 			return req.query[paramName];
-		else if (req.body && typeof req.body[paramName] !== undefined)
+		else if (req.body && typeof req.body[paramName] !== 'undefined')
 			return req.body[paramName];
 		else
 			return null;
