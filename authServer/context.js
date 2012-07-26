@@ -1,8 +1,8 @@
 exports.httpOAuthContext = function (req) {
 	function getParam(paramName) {
-		if (req.query && typeof req.query[paramName] !== undefined)
+		if (req.query && typeof req.query[paramName] !== 'undefined')
 			return req.query[paramName];
-		else if (req.body && typeof req.body[paramName] !== undefined)
+		else if (req.body && typeof req.body[paramName] !== 'undefined')
 			return req.body[paramName];
 		else
 			return null;
@@ -37,6 +37,7 @@ exports.httpOAuthContext = function (req) {
 		password: getParam('password'),
 		scope: getParam('scope') ? getParam('scope').split(',') : null,
 		redirectUri: getParam('redirect_uri'),
-		accessToken: getAccessToken()
+		accessToken: getAccessToken(),
+		userName: getParam('username')
 	} : null;
 };

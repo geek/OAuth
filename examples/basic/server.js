@@ -11,11 +11,21 @@ var authCodes = {},
 			secret: 'what',
 			grantTypes: ['implicit', 'password', 'client_credentials', 'authorization_code'],
 			isValidRedirectUri: function(uri) { return true; }
+		},
+		'dummy': {
+			id: 'dummy',
+			secret: '',
+			grantTypes: ['password'],
+			isValidRedirectUri: function(uri) { return true; }
 		}
 	},
 	clientService = {
 		getById: function(id, callback) {
-			return callback(clients[id]);
+			if (id === null) {
+				return callback(clients['dummy']);
+			} else {
+				return callback(clients[id]);
+			}
 		}
 	},
 	tokenService = {
@@ -40,7 +50,7 @@ var authCodes = {},
 		}
 	},
 	membershipService = {
-		areUserCredentialsValid: function(userId, password, callback) {
+		areUserCredentialsValid: function(userName, password, callback) {
 			return callback(true);
 		}
 	},
