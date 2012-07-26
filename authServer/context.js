@@ -37,6 +37,7 @@ exports.httpOAuthContext = function (req) {
 		password: getParam('password'),
 		scope: getParam('scope') ? getParam('scope').split(',') : null,
 		redirectUri: getParam('redirect_uri'),
-		accessToken: getAccessToken()
+		accessToken: getAccessToken(),
+		userName: getParam('username')
 	} : null;
 };

@@ -12,7 +12,8 @@ describe('httpOAuthContext', function() {
 				state: 'mystate',
 				password: 'mypassword',
 				scope: 'scope1,scope2,scope3',
-				redirect_uri: 'http://someredirect.com'
+				redirect_uri: 'http://someredirect.com',
+				username: 'test'
 			},
 			headers: {
 				authorization: 'Authorization: Bearer myaccesstoken'
@@ -69,5 +70,9 @@ describe('httpOAuthContext', function() {
 
 	it ('has the correct access token with a complete request', function() {
 		expect(httpOAuthContext(completeRequest).accessToken).to.equal('myaccesstoken');
+	});
+	
+	it ('has the correct username with a complete request', function() {
+		expect(httpOAuthContext(completeRequest).userName).to.equal('test');
 	});
 });
