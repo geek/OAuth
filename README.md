@@ -39,9 +39,9 @@ You will need to construct the OAuth object by passing in the following paramete
    * expiresDate
  
  A token object will have these properties when passed to the save function:
-   * accessToken
-   * refreshToken
-   * expiresIn (seconds when the access token expires)
+   * access_token
+   * refresh_token
+   * expires_in (seconds when the access token expires)
 
 ## Example
 
