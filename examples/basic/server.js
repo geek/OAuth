@@ -50,7 +50,7 @@ var authCodes = {},
 		}
 	},
 	membershipService = {
-		areUserCredentialsValid: function(userName, password, callback) {
+		areUserCredentialsValid: function(userName, password, scope, callback) {
 			return callback(true);
 		}
 	},
