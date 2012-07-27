@@ -66,8 +66,8 @@ AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 			}, finalResponse);
 		else if (token)
 			self.authorizationService.saveAccessToken({
-				accessToken: token,
-				expiresDate: this.getExpiresDate()
+				access_token: token,
+				expires_in: this.getExpiresDate()
 			}, finalResponse);
 	},
 	next = function(client) {
@@ -138,12 +138,12 @@ AuthServer.prototype.validateAccessToken = function(req, callback) {
 		response = { isValid: true };
 
 	return self.authorizationService.getAccessToken(context.accessToken, function(tokenData) {
-		if (!tokenData || !tokenData.accessToken)
+		if (!tokenData || !tokenData.access_token)
 			response = {
 				isValid: false,
 				error: 'Access token not found'
 			};
-		else if (authUtil.isExpired(tokenData.expiresDate)) 
+		else if (authUtil.isExpired(tokenData.expires_in)) 
 			response = {
 				isValid: false,
 				error: 'Access token has expired'
