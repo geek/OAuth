@@ -31,6 +31,9 @@ var authCodes = {},
 	tokenService = {
 		generateToken: function() { 
 			return uuid.v4(); 
+		},
+		generateDeviceCode: function() {
+			return generateToken();
 		}
 	},
 	authorizationService = {

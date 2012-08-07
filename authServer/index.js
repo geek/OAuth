@@ -77,6 +77,43 @@ AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 	self.clientService.getById(context.clientId, next);
 };
 
+AuthServer.prototype.getDeviceCode = function(req, callback) {
+	var self = this,
+		context = context(req);
+
+	var getCodeWithClient = function(client) {
+		if (!client)
+			return callback(errors.invalidClient(context));
+		else if (!self.isSupportedScope(context.scope))
+			return callback(errors.invalidScope(context.state));
+
+		var code = self.tokenService.generateDeviceCode(),
+			finalResponse = function() {
+				var response = { 
+					code: code
+				};
+			
+				if (context.state)
+					response.state = context.state;
+
+				return callback(response);
+			};
+
+		self.authorizationService.saveAuthorizationCode({
+			code: code,
+			redirectUri: null,
+			clientId: client.id,
+			timestamp: new Date(),
+			userId: null
+		}, finalResponse);
+	},
+	next = function(client) {
+		getCodeWithClient(client);
+	};
+
+	self.clientService.getById(context.clientId, next);
+};
+
 AuthServer.prototype.getTokenData = function(context, callback) {
 	var self = this,
 		grantType = context.grantType.toLowerCase(),
