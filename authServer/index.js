@@ -1,4 +1,4 @@
-var httpOAuthContext = require('./context').httpOAuthContext,
+var context = require('./context'),
 	errors = require('./errors'),
 	grantTypes = require('./grantTypes'),
 	authUtil = require('./util');
@@ -27,7 +27,7 @@ function AuthServer(clientService, tokenService, authorizationService, membershi
 
 AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 	var self = this,
-		context = httpOAuthContext(req);
+		context = context(req);
 
 	if (!context || !context.responseType)
 		return callback(errors.invalidRequest(context.state));
@@ -106,7 +106,7 @@ AuthServer.prototype.getTokenData = function(context, callback) {
 
 AuthServer.prototype.grantAccessToken = function(req, userId, callback) {
 	var self = this,
-		context = httpOAuthContext(req);
+		context = context(req);
 
 	if (!context.grantType)
 		return callback(errors.invalidRequest(context.state));
@@ -134,7 +134,7 @@ AuthServer.prototype.grantAccessToken = function(req, userId, callback) {
 
 AuthServer.prototype.validateAccessToken = function(req, callback) {
 	var self = this,
-		context = httpOAuthContext(req),
+		context = context(req),
 		response = { isValid: true };
 
 	return self.authorizationService.getAccessToken(context.accessToken, function(tokenData) {

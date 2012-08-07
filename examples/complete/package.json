@@ -1,0 +1,22 @@
+{
+  "description": "A complete OAuth server example",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "union": "0.3.0",
+    "flatiron": "0.2.5",
+    "auth-server": "*",
+    "resourceful": "*"
+  },
+  "devDependencies": {
+    "api-easy": "0.3.2",
+    "vows": "0.6.1"
+  },
+  "scripts": {
+    "test": "vows --spec",
+    "start": "node app.js"
+  },
+  "name": "Complete-Example",
+  "author": "Wyatt Preul",
+  "homepage": ""
+}
