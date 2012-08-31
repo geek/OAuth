@@ -1,6 +1,12 @@
 # OAuth for Node
 =====
 
+## Contributors
+The following individuals have been really helpful in getting this module where it is today.
+ * @thatguydan
+ * @polym0rph
+ * @cbrammer
+
 ## Description
 
 This is an authorization server implementation for the [v2-31 OAuth](http://tools.ietf.org/html/draft-ietf-oauth-v2-31) specification.  There is an example implementation in the examples folder for the server.  Eventually, I will add a client implementation for the latest specification, which is why it is simply named OAuth at this point. The four main grant types are all supported.  This means that you can allow implicit, client_credentials, authorization_code, and password grants.  It is up to you to implement the authorization page for a user.  This is generally found at /oauth/authorize.  It is also up to you to implement a service for storing client details and access tokens.  The OAuth provider assumes nothing about your server and therefore has no hard dependencies on anything outside of node.  That being said, there is the expectation that the query and body object you pass to OAuth is an object and not in its original string state.  You can achieve this easily by using the connect query middleware, as the example application shows.
