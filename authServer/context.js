@@ -9,6 +9,8 @@ module.exports = function (req) {
 	};
 
 	function getAccessToken() {
+		if (getParam('access_token')) return getParam('access_token')
+			
 		if (!req || !req.headers || !req.headers.authorization)
 			return null;
 
@@ -37,7 +39,7 @@ module.exports = function (req) {
 		password: getParam('password'),
 		scope: getParam('scope') ? getParam('scope').split(',') : null,
 		redirectUri: getParam('redirect_uri'),
-		accessToken: getAccessToken(),
+		access_token: getAccessToken(),
 		userName: getParam('username')
 	} : null;
 };
