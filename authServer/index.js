@@ -1,4 +1,4 @@
-var context = require('./context'),
+var contextHandler = require('./context'),
 	errors = require('./errors'),
 	grantTypes = require('./grantTypes'),
 	authUtil = require('./util');
@@ -27,7 +27,7 @@ function AuthServer(clientService, tokenService, authorizationService, membershi
 
 AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 	var self = this,
-		context = context(req);
+		context = contextHandler(req);
 
 	if (!context || !context.responseType)
 		return callback(errors.invalidRequest(context.state));
@@ -66,8 +66,8 @@ AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 			}, finalResponse);
 		else if (token)
 			self.authorizationService.saveAccessToken({
-				accessToken: token,
-				expiresDate: this.getExpiresDate()
+				access_token: token,
+				expires_in: this.getExpiresDate()
 			}, finalResponse);
 	},
 	next = function(client) {
@@ -79,7 +79,7 @@ AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 
 AuthServer.prototype.getDeviceCode = function(req, callback) {
 	var self = this,
-		context = context(req);
+		context = contextHandler(req);
 
 	var getCodeWithClient = function(client) {
 		if (!client)
@@ -114,11 +114,11 @@ AuthServer.prototype.getDeviceCode = function(req, callback) {
 	self.clientService.getById(context.clientId, next);
 };
 
-AuthServer.prototype.getTokenData = function(context, callback) {
+AuthServer.prototype.getTokenData = function(context, userId, callback) {
 	var self = this,
 		grantType = context.grantType.toLowerCase(),
 		generateTokenDataRef = function(includeRefreshToken) {
-			return authUtil.generateTokenData(includeRefreshToken, self.tokenService.generateToken, self.getExpiresDate);
+			return authUtil.generateTokenData(userId, context.clientId, includeRefreshToken, self.tokenService.generateToken, self.getExpiresDate);
 		};
 
 	if (grantType === grantTypes.authorizationCode) {
@@ -143,7 +143,7 @@ AuthServer.prototype.getTokenData = function(context, callback) {
 
 AuthServer.prototype.grantAccessToken = function(req, userId, callback) {
 	var self = this,
-		context = context(req);
+		context = contextHandler(req);
 
 	if (!context.grantType)
 		return callback(errors.invalidRequest(context.state));
@@ -158,24 +158,25 @@ AuthServer.prototype.grantAccessToken = function(req, userId, callback) {
 
 		if (grantTypes.requiresClientSecret(context.grantType) && context.clientSecret !== client.secret)
 			return callback(errors.clientCredentialsInvalid(context.state));
-
-		return self.getTokenData(context, function(tokenData) {
+		return self.getTokenData(context, userId, function(tokenData) {
 			return tokenData.error ? callback(tokenData) : self.authorizationService.saveAccessToken(tokenData, function() {
+				delete tokenData.userId;
+				delete tokenData.clientId;
 				callback(tokenData)
 			});
 		});
 	};
-	
+
 	self.clientService.getById(context.clientId, next);
 };
 
 AuthServer.prototype.validateAccessToken = function(req, callback) {
 	var self = this,
-		context = context(req),
-		response = { isValid: true };
+		context = contextHandler(req);
 
-	return self.authorizationService.getAccessToken(context.accessToken, function(tokenData) {
-		if (!tokenData || !tokenData.accessToken)
+	return self.authorizationService.getAccessToken(context.access_token, function(tokenData) {
+		var response;
+		if (!tokenData || !tokenData.access_token)
 			response = {
 				isValid: false,
 				error: 'Access token not found'
@@ -185,7 +186,13 @@ AuthServer.prototype.validateAccessToken = function(req, callback) {
 				isValid: false,
 				error: 'Access token has expired'
 			};
-				
+		else 
+			response = {
+				isValid: true,
+				userId:tokenData.userId,
+				clientId:tokenData.userId
+			};
+			
 		return callback(response);
 	});
 };
