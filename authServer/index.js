@@ -1,4 +1,4 @@
-var context = require('./context'),
+var contextHandler = require('./context'),
 	errors = require('./errors'),
 	grantTypes = require('./grantTypes'),
 	authUtil = require('./util');
@@ -27,7 +27,7 @@ function AuthServer(clientService, tokenService, authorizationService, membershi
 
 AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 	var self = this,
-		context = context(req);
+		context = contextHandler(req);
 
 	if (!context || !context.responseType)
 		return callback(errors.invalidRequest(context.state));
@@ -79,7 +79,7 @@ AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 
 AuthServer.prototype.getDeviceCode = function(req, callback) {
 	var self = this,
-		context = context(req);
+		context = contextHandler(req);
 
 	var getCodeWithClient = function(client) {
 		if (!client)
@@ -143,7 +143,7 @@ AuthServer.prototype.getTokenData = function(context, callback) {
 
 AuthServer.prototype.grantAccessToken = function(req, userId, callback) {
 	var self = this,
-		context = context(req);
+		context = contextHandler(req);
 
 	if (!context.grantType)
 		return callback(errors.invalidRequest(context.state));
@@ -171,7 +171,7 @@ AuthServer.prototype.grantAccessToken = function(req, userId, callback) {
 
 AuthServer.prototype.validateAccessToken = function(req, callback) {
 	var self = this,
-		context = context(req),
+		context = contextHandler(req),
 		response = { isValid: true };
 
 	return self.authorizationService.getAccessToken(context.access_token, function(tokenData) {
