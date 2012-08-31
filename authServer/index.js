@@ -66,8 +66,8 @@ AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 			}, finalResponse);
 		else if (token)
 			self.authorizationService.saveAccessToken({
-				accessToken: token,
-				expiresDate: this.getExpiresDate()
+				access_token: token,
+				expires_in: this.getExpiresDate()
 			}, finalResponse);
 	},
 	next = function(client) {
@@ -165,7 +165,7 @@ AuthServer.prototype.grantAccessToken = function(req, userId, callback) {
 			});
 		});
 	};
-	
+
 	self.clientService.getById(context.clientId, next);
 };
 
@@ -174,8 +174,8 @@ AuthServer.prototype.validateAccessToken = function(req, callback) {
 		context = context(req),
 		response = { isValid: true };
 
-	return self.authorizationService.getAccessToken(context.accessToken, function(tokenData) {
-		if (!tokenData || !tokenData.accessToken)
+	return self.authorizationService.getAccessToken(context.access_token, function(tokenData) {
+		if (!tokenData || !tokenData.access_token)
 			response = {
 				isValid: false,
 				error: 'Access token not found'

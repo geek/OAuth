@@ -39,7 +39,7 @@ module.exports = function (req) {
 		password: getParam('password'),
 		scope: getParam('scope') ? getParam('scope').split(',') : null,
 		redirectUri: getParam('redirect_uri'),
-		accessToken: getAccessToken(),
+		access_token: getAccessToken(),
 		userName: getParam('username')
 	} : null;
 };
