@@ -172,10 +172,10 @@ AuthServer.prototype.grantAccessToken = function(req, userId, callback) {
 
 AuthServer.prototype.validateAccessToken = function(req, callback) {
 	var self = this,
-		context = contextHandler(req),
-		response = { isValid: true };
+		context = contextHandler(req);
 
 	return self.authorizationService.getAccessToken(context.access_token, function(tokenData) {
+		var response;
 		if (!tokenData || !tokenData.access_token)
 			response = {
 				isValid: false,
@@ -186,7 +186,13 @@ AuthServer.prototype.validateAccessToken = function(req, callback) {
 				isValid: false,
 				error: 'Access token has expired'
 			};
-				
+		else 
+			response = {
+				isValid: true,
+				userId:tokenData.userId,
+				clientId:tokenData.userId
+			};
+			
 		return callback(response);
 	});
 };
