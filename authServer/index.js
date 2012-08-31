@@ -114,11 +114,11 @@ AuthServer.prototype.getDeviceCode = function(req, callback) {
 	self.clientService.getById(context.clientId, next);
 };
 
-AuthServer.prototype.getTokenData = function(context, callback) {
+AuthServer.prototype.getTokenData = function(context, userId, callback) {
 	var self = this,
 		grantType = context.grantType.toLowerCase(),
 		generateTokenDataRef = function(includeRefreshToken) {
-			return authUtil.generateTokenData(includeRefreshToken, self.tokenService.generateToken, self.getExpiresDate);
+			return authUtil.generateTokenData(userId, context.clientId, includeRefreshToken, self.tokenService.generateToken, self.getExpiresDate);
 		};
 
 	if (grantType === grantTypes.authorizationCode) {
@@ -158,9 +158,10 @@ AuthServer.prototype.grantAccessToken = function(req, userId, callback) {
 
 		if (grantTypes.requiresClientSecret(context.grantType) && context.clientSecret !== client.secret)
 			return callback(errors.clientCredentialsInvalid(context.state));
-
-		return self.getTokenData(context, function(tokenData) {
+		return self.getTokenData(context, userId, function(tokenData) {
 			return tokenData.error ? callback(tokenData) : self.authorizationService.saveAccessToken(tokenData, function() {
+				delete tokenData.userId;
+				delete tokenData.clientId;
 				callback(tokenData)
 			});
 		});

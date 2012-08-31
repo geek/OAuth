@@ -1,14 +1,22 @@
 exports.isValidAuthorizationCode = function(context, authorizationService, callback) {
+	/*
+		Validate the code is present, matches the stored one, and the clientId's match across requests
+	 */
 	authorizationService.getAuthorizationCode(context.code, function(authorizationCode) {
-		return callback(authorizationCode && (context.code === authorizationCode.code) && !exports.isExpired(authorizationCode.expiresDate));
+		return callback(authorizationCode 
+					&& (context.code === authorizationCode.code) 
+					&& !exports.isExpired(authorizationCode.expiresDate)
+					&& context.clientId === authorizationCode.clientId);
 	});
 };
 
-exports.generateTokenData = function(includeRefreshToken, generateToken, getExpiresDate) {
+exports.generateTokenData = function(userId, clientId, includeRefreshToken, generateToken, getExpiresDate) {
 	var tokenData = {
 			access_token: generateToken(),
 			token_type: 'bearer',
 			expires_in: getExpiresDate(),
+			userId:userId,
+			clientId:clientId
 		};
 
 	if (includeRefreshToken)
