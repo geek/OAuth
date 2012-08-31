@@ -6,13 +6,13 @@ exports.isValidAuthorizationCode = function(context, authorizationService, callb
 
 exports.generateTokenData = function(includeRefreshToken, generateToken, getExpiresDate) {
 	var tokenData = {
-			accessToken: generateToken(),
+			access_token: generateToken(),
 			token_type: 'bearer',
-			expiresDate: getExpiresDate()
+			expires_in: getExpiresDate()
 		};
 
 	if (includeRefreshToken)
-		tokenData.refreshToken = generateToken();
+		tokenData.refresh_token = generateToken();
 	
 	return tokenData;
 };

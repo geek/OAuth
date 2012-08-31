@@ -42,7 +42,7 @@ var authCodes = {},
 			return callback();
 		},
 		saveAccessToken: function(tokenData, callback) {
-			accessTokens[tokenData.accessToken] = tokenData;
+			accessTokens[tokenData.access_token] = tokenData;
 			return callback();
 		},
 		getAuthorizationCode: function(code, callback) {
