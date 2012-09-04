@@ -37,7 +37,7 @@ AuthServer.prototype.authorizeRequest = function(req, userId, callback) {
 	var authorizeRequestWithClient = function(client) {
 		if (!client)
 			return callback(errors.invalidClient(context));
-		else if (!context.redirectUri || !client.isValidRedirectUri(context.redirectUri))
+		else if (!context.redirectUri || !self.clientService.isValidRedirectUri(client,context.redirectUri))
 			return callback(errors.redirectUriMismatch(context.state));
 
 		if (!self.isSupportedScope(context.scope))
