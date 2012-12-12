@@ -1,32 +1,33 @@
 {
-  "author": "Wyatt Preul <wpreul@gmail.com> (http://kittenbubbles.com)",
-  "name": "auth-server",
-  "description": "OAuth Server for v2.31 of spec",
-  "keywords": ["oauth", "auth server"],
-  "version": "2.1.31",
-  "homepage": "https://github.com/wpreul/oauth",
-  "repository": {
+    "author": "Wyatt Preul <wpreul@gmail.com> (http://kittenbubbles.com)",
+    "name": "auth-server",
+    "description": "OAuth Server for v2.31 of spec",
+    "keywords": ["oauth", "auth server"],
+    "version": "2.1.31",
+    "homepage": "https://github.com/wpreul/oauth",
+    "repository": {
     "type" : "git",
     "url": "git://github.com/wpreul/oauth.git"
-  },
-  "bugs": { "url": "https://github.com/wpreul/oauth/issues" },
-  "main": "./authServer/",
-  "dependencies": {},
-  "devDependencies": {
-    "chai": "*",
-    "mocha": "*"
-  },
-  "optionalDependencies": {},
-  "engines": {
-    "node": "*"
-  },
-  "directories": {
-    "authServer": "./authServer"
-  },
-  "licenses": [
-  {
-      "type": "MIT +no-false-attribs",
-      "url": "https://github.com/wpreul/OAuth/blob/master/LICENCE"
-    }
-  ]
+    },
+    "bugs": { "url": "https://github.com/wpreul/oauth/issues" },
+    "main": "./lib/",
+    "dependencies": {},
+    "devDependencies": {
+        "chai": "*",
+        "mocha": "*"
+    },
+    "optionalDependencies": {},
+    "engines": {
+        "node": "*"
+    },
+    "scripts": {
+        "test": "make test"
+    },
+    "directories": {
+        "authServer": "./authServer"
+    },
+    "licenses": [{
+        "type": "MIT +no-false-attribs",
+        "url": "https://github.com/wpreul/OAuth/blob/master/LICENCE"
+    }]
 }
