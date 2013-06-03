@@ -1,7 +1,25 @@
-var expect = require('chai').expect,
-    context = require('../lib/context');
+// Load modules
+
+var Lab = require('lab');
+var Context = require('../lib/context');
+
+
+// Declare internals
+
+var internals = {};
+
+
+// Test shortcuts
+
+var expect = Lab.expect;
+var before = Lab.before;
+var after = Lab.after;
+var describe = Lab.experiment;
+var it = Lab.test;
+
 
 describe('context', function () {
+
     var completeRequest = {
         query: {
             response_type: 'myresponsetype',
@@ -20,59 +38,85 @@ describe('context', function () {
         }
     };
 
-    it('returns null when an invalid request is passed in', function () {
-        expect(context(null)).to.be.null;
+    it('returns null when an invalid request is passed in', function (done) {
+
+        expect(Context(null)).to.be.null;
+        done();
     });
 
-    it('has null properties when an empty request is passed in', function () {
-        expect(context({}).clientId).to.be.null;
+    it('has null properties when an empty request is passed in', function (done) {
+
+        expect(Context({}).clientId).to.be.null;
+        done();
     });
 
-    it('has the correct response type with a complete request', function () {
-        expect(context(completeRequest).responseType).to.equal('myresponsetype');
+    it('has the correct response type with a complete request', function (done) {
+
+        expect(Context(completeRequest).responseType).to.equal('myresponsetype');
+        done();
     });
 
-    it('has the correct client ID with a complete request', function () {
-        expect(context(completeRequest).clientId).to.equal('2');
+    it('has the correct client ID with a complete request', function (done) {
+
+        expect(Context(completeRequest).clientId).to.equal('2');
+        done();
     });
 
-    it('has the correct client secret with a complete request', function () {
-        expect(context(completeRequest).clientSecret).to.equal('mysecret');
+    it('has the correct client secret with a complete request', function (done) {
+
+        expect(Context(completeRequest).clientSecret).to.equal('mysecret');
+        done();
     });
 
-    it('has the correct code with a complete request', function () {
-        expect(context(completeRequest).code).to.equal('mycode');
+    it('has the correct code with a complete request', function (done) {
+
+        expect(Context(completeRequest).code).to.equal('mycode');
+        done();
     });
 
-    it('has the correct grant type with a complete request', function () {
-        expect(context(completeRequest).grantType).to.equal('mygranttype');
+    it('has the correct grant type with a complete request', function (done) {
+
+        expect(Context(completeRequest).grantType).to.equal('mygranttype');
+        done();
     });
 
-    it('has the correct state with a complete request', function () {
-        expect(context(completeRequest).state).to.equal('mystate');
+    it('has the correct state with a complete request', function (done) {
+
+        expect(Context(completeRequest).state).to.equal('mystate');
+        done();
     });
 
-    it('has the correct password with a complete request', function () {
-        expect(context(completeRequest).password).to.equal('mypassword');
+    it('has the correct password with a complete request', function (done) {
+
+        expect(Context(completeRequest).password).to.equal('mypassword');
+        done();
     });
 
-    it('has the correct scope with a complete request', function () {
-        var scope = context(completeRequest).scope;
+    it('has the correct scope with a complete request', function (done) {
+
+        var scope = Context(completeRequest).scope;
 
         expect(scope[0]).to.equal('scope1');
         expect(scope[1]).to.equal('scope2');
         expect(scope[2]).to.equal('scope3');
+        done();
     });
 
-    it('has the correct redirect URI with a complete request', function () {
-        expect(context(completeRequest).redirectUri).to.equal('http://someredirect.com');
+    it('has the correct redirect URI with a complete request', function (done) {
+
+        expect(Context(completeRequest).redirectUri).to.equal('http://someredirect.com');
+        done();
     });
 
-    it('has the correct access token with a complete request', function () {
-        expect(context(completeRequest).access_token).to.equal('myaccesstoken');
+    it('has the correct access token with a complete request', function (done) {
+
+        expect(Context(completeRequest).access_token).to.equal('myaccesstoken');
+        done();
     });
 
-    it('has the correct username with a complete request', function () {
-        expect(context(completeRequest).userName).to.equal('test');
+    it('has the correct username with a complete request', function (done) {
+
+        expect(Context(completeRequest).userName).to.equal('test');
+        done();
     });
 });

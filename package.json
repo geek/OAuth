@@ -1,9 +1,9 @@
 {
-    "author": "Wyatt Preul <wpreul@gmail.com> (http://kittenbubbles.com)",
+    "author": "Wyatt Preul <wpreul@gmail.com> (http://jsgeek.com)",
     "name": "auth-server",
     "description": "OAuth Server for v2.31 of spec",
     "keywords": ["oauth", "auth server"],
-    "version": "2.1.32",
+    "version": "2.2.0",
     "homepage": "https://github.com/wpreul/oauth",
     "repository": {
     "type" : "git",
@@ -13,15 +13,14 @@
     "main": "./lib/",
     "dependencies": {},
     "devDependencies": {
-        "chai": "*",
-        "mocha": "*"
+        "lab": "0.1.x"
     },
     "optionalDependencies": {},
     "engines": {
-        "node": "*"
+        "node": ">=0.8.0"
     },
     "scripts": {
-        "test": "make test"
+        "test": "make test-cov"
     },
     "directories": {
         "authServer": "./authServer"
