@@ -1,6 +1,8 @@
 # OAuth for Node
 =====
 
+[![Build Status](https://travis-ci.org/wpreul/OAuth.png)](https://travis-ci.org/wpreul/OAuth)
+
 ## Contributors
 The following individuals have been really helpful in getting this module where it is today.
  * @thatguydan
@@ -27,7 +29,7 @@ You will need to construct the OAuth object by passing in the following paramete
 2. An object passed in as the clientService parameter that has a function named getById.  getById will be passed an ID and will be expected to pass a client object to the callback function.
 
 3. A client object should have the following:
-  * id 
+  * id
   * secret
   * grantTypes (array of allowed grant types for this client, you must pass implicit if you want to allow this type)
   * isValidRedirectUri (function that takes as a parameter a redirectUri)
@@ -43,7 +45,7 @@ You will need to construct the OAuth object by passing in the following paramete
  An authorization code object should have these properties at a minimum:
    * code
    * expiresDate
- 
+
  A token object will have these properties when passed to the save function:
    * accessToken
    * refreshToken
