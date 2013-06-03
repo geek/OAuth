@@ -3,14 +3,14 @@
     "name": "auth-server",
     "description": "OAuth Server for v2.31 of spec",
     "keywords": ["oauth", "auth server"],
-    "version": "2.2.0",
+    "version": "2.2.1",
     "homepage": "https://github.com/wpreul/oauth",
     "repository": {
     "type" : "git",
     "url": "git://github.com/wpreul/oauth.git"
     },
     "bugs": { "url": "https://github.com/wpreul/oauth/issues" },
-    "main": "./lib/",
+    "main": "index",
     "dependencies": {},
     "devDependencies": {
         "lab": "0.1.x"
@@ -21,9 +21,6 @@
     },
     "scripts": {
         "test": "make test-cov"
-    },
-    "directories": {
-        "authServer": "./authServer"
     },
     "licenses": [{
         "type": "MIT +no-false-attribs",
