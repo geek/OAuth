@@ -3,7 +3,7 @@
     "name": "auth-server",
     "description": "OAuth Server for v2.31 of spec",
     "keywords": ["oauth", "auth server"],
-    "version": "2.2.1",
+    "version": "2.2.2",
     "homepage": "https://github.com/wpreul/oauth",
     "repository": {
     "type" : "git",
