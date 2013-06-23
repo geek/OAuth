@@ -4,12 +4,12 @@ var flatiron = require('flatiron'),
     path = require('path'),
     http = require('http');
     app = flatiron.app,
-    creature = require('./lib/resources/creature,js');
+    creature = require('./lib/resources/creature.js');
 
 app.config.file({ file: path.join(__dirname, 'config', 'config.json') });
 
 app.use(flatiron.plugins.resourceful, {
-  dir: path.join(__dirname, 'lib', 'resources'), 
+  dir: path.join(__dirname, 'lib', 'resources'),
   engine: 'memory'
 });
 

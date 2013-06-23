@@ -20,19 +20,19 @@ var authCodes = {},
 	clientService = {
 		getById: function(id, callback) {
 			if (id === null) {
-				return callback(clients['dummy']);
+				return callback(clients.dummy);
 			} else {
 				return callback(clients[id]);
 			}
 		},
-		isValidRedirectUri: function(client,uri) { return true; }
+		isValidRedirectUri: function(client, uri) { return true; }
 	},
 	tokenService = {
-		generateToken: function() { 
-			return uuid.v4(); 
+		generateToken: function() {
+			return uuid.v4();
 		},
 		generateDeviceCode: function() {
-			return generateToken();
+			return uuid.v4();
 		}
 	},
 	authorizationService = {
@@ -41,11 +41,11 @@ var authCodes = {},
 			return callback();
 		},
 		saveAccessToken: function(tokenData, callback) {
-			accessTokens[tokenData.accessToken] = tokenData;
+			accessTokens[tokenData.access_token] = tokenData;
 			return callback();
 		},
 		getAuthorizationCode: function(code, callback) {
-			return callback(authCodes[code]); 
+			return callback(authCodes[code]);
 		},
 		getAccessToken: function(token, callback) {
 			return callback(accessTokens[token]);
@@ -58,7 +58,7 @@ var authCodes = {},
 	},
 	supportedScopes = [ 'profile', 'status', 'avatar'],
 	expiresIn = 3600,
-	authServer = new oauth.AuthServer(clientService, tokenService, authorizationService, membershipService, expiresIn, supportedScopes);
+	authServer = new oauth(clientService, tokenService, authorizationService, membershipService, expiresIn, supportedScopes);
 
 var authorize = function(req, res) {
 		authServer.authorizeRequest(req, 'userid', function(response) {
