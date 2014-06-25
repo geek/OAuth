@@ -2,7 +2,7 @@
   "name": "simple-oauth-server",
   "version": "0.0.0",
   "description": "A simple implementation of OAuth 2 providing hooks to call to your own services",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "directories": {
     "test": "test"
   },
@@ -23,6 +23,7 @@
     "grape": "^1.0.0",
     "jshint": "^2.5.1",
     "mockery": "^1.4.0",
-    "precommit-hook": "^1.0.2"
+    "precommit-hook": "^1.0.2",
+    "timekeeper": "0.0.4"
   }
 }
