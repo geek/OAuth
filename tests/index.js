@@ -12,7 +12,6 @@ var test = require('grape'),
 mockery.registerAllowables([pathToObjectUnderTest]);
 
 function resetMocks(){
-    mockery.registerMock('./context', function(){});
     mockery.registerMock('./errors', {});
     mockery.registerMock('./grantTypes', {});
     mockery.registerMock('./util', {});
