@@ -83,7 +83,7 @@ test('AuthServer constructs correct object without new keyword', function(t){
 });
 
 test('AuthServer.isSupportedScope returns based on provided Supported Scopes', function(t){
-    t.plan(4);
+    t.plan(5);
 
     var AuthServer = getCleanTestObject(),
         withScopes = new AuthServer(
@@ -97,10 +97,11 @@ test('AuthServer.isSupportedScope returns based on provided Supported Scopes', f
         withoutScopes = new AuthServer();
 
     t.equal(withScopes.isSupportedScope(), false, 'isSupportedScope returns false if undefined');
-    t.equal(withScopes.isSupportedScope('majigger'), false, 'isSupportedScope returns false if invalid');
-    t.equal(withScopes.isSupportedScope(testSupportedScopes[0]), true, 'isSupportedScope returns true if valid');
+    t.equal(withScopes.isSupportedScope([testSupportedScopes[0], 'majigger']), false, 'isSupportedScope returns false if atleast 1 is invalid');
+    t.equal(withScopes.isSupportedScope(testSupportedScopes), true, 'isSupportedScope returns true if valid');
+    t.equal(withScopes.isSupportedScope(testSupportedScopes[0]), true, 'isSupportedScope handels a string');
 
-    t.equal(withoutScopes.isSupportedScope(testSupportedScopes[0]), false, 'isSupportedScope returns false if none provided');
+    t.equal(withoutScopes.isSupportedScope(testSupportedScopes), false, 'isSupportedScope returns false if none provided');
 });
 
 test('AuthServer.getExpiresDate returns based on provided expiresIn value', function(t){
