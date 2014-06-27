@@ -5,7 +5,7 @@ var uuid = require('node-uuid'),
         '1': {
             id: '1',
             secret: 'kittens',
-            grantTypes: ['profile', 'email', 'login']
+            grantTypes: ['implicit', 'password', 'client_credentials', 'authorization_code']
         }
     };
 

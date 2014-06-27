@@ -23,15 +23,16 @@ function authorize(request, response) {
 
 function grantToken(request, response) {
     oauthServer.grantAccessToken(request, 'userid', function(token) {
-        response.end(token);
+        response.end(JSON.stringify(token));
     });
 }
 
 function apiEndpoint(request, response) {
     oauthServer.validateAccessToken(request, function(validationResult) {
-        response.end(validationResult);
+        response.end(JSON.stringify(validationResult));
     });
 }
+
 
 var routes = {
     '/oauth/authorize': authorize,
