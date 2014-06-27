@@ -1,29 +1,29 @@
 {
-    "author": "Wyatt Preul <wpreul@gmail.com> (http://jsgeek.com)",
-    "name": "auth-server",
-    "description": "OAuth Server for v2.31 of spec",
-    "keywords": ["oauth", "auth server"],
-    "version": "2.2.2",
-    "homepage": "https://github.com/wpreul/oauth",
-    "repository": {
-    "type" : "git",
-    "url": "git://github.com/wpreul/oauth.git"
-    },
-    "bugs": { "url": "https://github.com/wpreul/oauth/issues" },
-    "main": "index",
-    "dependencies": {},
-    "devDependencies": {
-        "lab": "0.1.x"
-    },
-    "optionalDependencies": {},
-    "engines": {
-        "node": ">=0.8.0"
-    },
-    "scripts": {
-        "test": "make test-cov"
-    },
-    "licenses": [{
-        "type": "MIT +no-false-attribs",
-        "url": "https://github.com/wpreul/OAuth/blob/master/LICENCE"
-    }]
+  "name": "simple-oauth-server",
+  "version": "0.0.0",
+  "description": "A simple implementation of OAuth 2 providing hooks to call to your own services",
+  "main": "./lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node ./tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MauriceButler/simple-oauth-server.git"
+  },
+  "author": "Maurice Butler <maurice.butler@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MauriceButler/simple-oauth-server/issues"
+  },
+  "homepage": "https://github.com/MauriceButler/simple-oauth-server",
+  "devDependencies": {
+    "grape": "^1.0.0",
+    "jshint": "^2.5.1",
+    "mockery": "^1.4.0",
+    "precommit-hook": "^1.0.2",
+    "timekeeper": "0.0.4"
+  }
 }
