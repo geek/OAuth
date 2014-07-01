@@ -18,7 +18,7 @@ This is based on [OAuth](https://github.com/wpreul/OAuth) but now supports error
         ['profile', 'status', 'avatar']
     );
 
-See [Example](#expectations) for an actual usage senario
+See [Example](#example) for an actual usage senario
 
 ## Expectations
 
