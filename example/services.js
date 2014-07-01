@@ -12,39 +12,39 @@ var uuid = require('node-uuid'),
 module.exports = {
     clientService: {
         getById: function(id, callback) {
-            return callback(clients[id]);
+            return callback(null, clients[id]);
         },
-        isValidRedirectUri: function(/*client, uri*/) {
+        isValidRedirectUri: function(/*client, requestedUri*/) {
             return true;
         }
     },
     tokenService: {
-        generateToken: function() {
-            return uuid.v4();
+        generateToken: function(callback) {
+            callback(null, uuid.v4());
         },
-        generateDeviceCode: function() {
-            return uuid.v4();
+        generateAuthorizationCode: function(callback) {
+            callback(null, uuid.v4());
         }
     },
     authorizationService: {
         saveAuthorizationCode: function(codeData, callback) {
             authCodes[codeData.code] = codeData;
-            return callback();
+            return callback(null, authCodes[codeData.code]);
         },
         saveAccessToken: function(tokenData, callback) {
             accessTokens[tokenData.access_token] = tokenData;
-            return callback();
+            return callback(null, accessTokens[tokenData.access_token]);
         },
         getAuthorizationCode: function(code, callback) {
-            return callback(authCodes[code]);
+            return callback(null, authCodes[code]);
         },
         getAccessToken: function(token, callback) {
-            return callback(accessTokens[token]);
+            return callback(null, accessTokens[token]);
         }
     },
     membershipService: {
         areUserCredentialsValid: function(userName, password, scope, callback) {
-            return callback(true);
+            return callback(null, true);
         }
     }
 };

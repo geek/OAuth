@@ -1,6 +1,8 @@
 {
   "devDependencies": {
-    "beeline": "^0.2.2",
-    "node-uuid": "^1.4.1"
+    "beeline": "^0.2.2"
+  },
+  "dependencies": {
+    "kgo": "^1.0.0"
   }
 }

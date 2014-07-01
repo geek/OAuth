@@ -2,7 +2,7 @@ var http = require('http'),
     port = 8080,
     server = http.createServer(),
     beeline = require('beeline'),
-    supportedScopes = [ 'profile', 'status', 'avatar'],
+    supportedScopes = ['profile', 'status', 'avatar'],
     expiresIn = 3600,
     OAuthServer = require('../'),
     services = require('./services'),
@@ -16,19 +16,34 @@ var http = require('http'),
     );
 
 function authorize(request, response) {
-    oauthServer.authorizeRequest(request, 'userid', function(authorizationResult) {
+    oauthServer.authorizeRequest(request, 'userid', function(error, authorizationResult) {
+        if(error){
+            response.statusCode = 400;
+            return response.end(JSON.stringify(error));
+        }
+
         response.end(JSON.stringify(authorizationResult));
     });
 }
 
 function grantToken(request, response) {
-    oauthServer.grantAccessToken(request, 'userid', function(token) {
+    oauthServer.grantAccessToken(request, 'userid', function(error, token) {
+        if(error){
+            response.statusCode = 400;
+            return response.end(JSON.stringify(error));
+        }
+
         response.end(JSON.stringify(token));
     });
 }
 
 function apiEndpoint(request, response) {
-    oauthServer.validateAccessToken(request, function(validationResult) {
+    oauthServer.validateAccessToken(request, function(error, validationResult) {
+        if(error){
+            response.statusCode = 401;
+            return response.end(JSON.stringify(error));
+        }
+
         response.end(JSON.stringify(validationResult));
     });
 }
