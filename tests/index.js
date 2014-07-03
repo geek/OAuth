@@ -1,6 +1,7 @@
 var test = require('grape'),
     mockery = require('mockery'),
     timekeeper = require('timekeeper'),
+    kgo = require('kgo'),
     pathToObjectUnderTest = '../lib',
     testClientService = {},
     testTokenService = {},
@@ -12,9 +13,14 @@ var test = require('grape'),
 mockery.registerAllowables([pathToObjectUnderTest]);
 
 function resetMocks(){
+    mockery.registerMock('kgo', kgo);
     mockery.registerMock('./errors', {});
     mockery.registerMock('./grantTypes', {});
-    mockery.registerMock('./util', {});
+    mockery.registerMock('./util', {
+        getOauthParameters: function(callback){
+            return callback;
+        }
+    });
 }
 
 function getCleanTestObject(){
