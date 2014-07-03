@@ -22,6 +22,10 @@ function authorize(request, response) {
             return response.end(JSON.stringify(error));
         }
 
+        // var code = require('url').parse(authorizationResult.redirectUri, true).query.code;
+        // response.statusCode = 302;
+        // response.setHeader('Location', 'http://localhost:8080/oauth/token?client_id=1&grant_type=authorization_code&client_secret=kittens&code=' + code);
+
         response.end(JSON.stringify(authorizationResult));
     });
 }
