@@ -1,6 +1,6 @@
 {
   "name": "simple-oauth-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A simple implementation of OAuth 2 providing hooks to call to your own services",
   "main": "./lib/index.js",
   "directories": {
