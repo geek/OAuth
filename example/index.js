@@ -16,7 +16,7 @@ var http = require('http'),
     );
 
 function authorize(request, response) {
-    oauthServer.authorizeRequest(request, 'userid', function(error, authorizationResult) {
+    oauthServer.authorizeRequest(request, 'accountid', function(error, authorizationResult) {
         if(error){
             response.statusCode = 400;
             return response.end(JSON.stringify(error));
@@ -27,7 +27,7 @@ function authorize(request, response) {
 }
 
 function grantToken(request, response) {
-    oauthServer.grantAccessToken(request, 'userid', function(error, token) {
+    oauthServer.grantAccessToken(request, function(error, token) {
         if(error){
             response.statusCode = 400;
             return response.end(JSON.stringify(error));
