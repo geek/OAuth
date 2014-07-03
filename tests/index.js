@@ -1,8 +1,7 @@
 var test = require('grape'),
     mockery = require('mockery'),
     timekeeper = require('timekeeper'),
-    kgo = require('kgo'),
-    pathToObjectUnderTest = '../lib',
+    pathToObjectUnderTest = '../',
     testClientService = {},
     testTokenService = {},
     testAuthorizationService = {},
@@ -13,13 +12,11 @@ var test = require('grape'),
 mockery.registerAllowables([pathToObjectUnderTest]);
 
 function resetMocks(){
-    mockery.registerMock('kgo', kgo);
-    mockery.registerMock('./errors', {});
-    mockery.registerMock('./grantTypes', {});
-    mockery.registerMock('./util', {
-        getOauthParameters: function(callback){
-            return callback;
-        }
+    mockery.registerMock('./lib', {
+        authorizeRequest: function(){},
+        getTokenData: function(){},
+        grantAccessToken: function(){},
+        validateAccessToken: function(){}
     });
 }
 
@@ -139,14 +136,6 @@ test('AuthServer.prototype.authorizeRequest exists', function(t){
     var AuthServer = getCleanTestObject();
 
     t.equal(typeof AuthServer.prototype.authorizeRequest, 'function', 'AuthServer.prototype.authorizeRequest is a function');
-});
-
-test('AuthServer.prototype.getDeviceCode exists', function(t){
-    t.plan(1);
-
-    var AuthServer = getCleanTestObject();
-
-    t.equal(typeof AuthServer.prototype.getDeviceCode, 'function', 'AuthServer.prototype.getDeviceCode is a function');
 });
 
 test('AuthServer.prototype.getTokenData exists', function(t){
