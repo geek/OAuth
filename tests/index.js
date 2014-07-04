@@ -161,3 +161,5 @@ test('AuthServer.prototype.validateAccessToken exists', function(t){
 
     t.equal(typeof AuthServer.prototype.validateAccessToken, 'function', 'AuthServer.prototype.validateAccessToken is a function');
 });
+
+require('./lib');
