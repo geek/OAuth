@@ -27,6 +27,7 @@
     "timekeeper": "0.0.4"
   },
   "dependencies": {
-    "kgo": "^1.0.0"
+    "kgo": "^1.0.0",
+    "mockery": "^1.4.0"
   }
 }
