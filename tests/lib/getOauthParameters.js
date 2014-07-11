@@ -2,7 +2,7 @@ var test = require('grape'),
     pathToObjectUnderTest = '../../lib/getOauthParameters',
     getOauthParameters = require(pathToObjectUnderTest);
 
-test('getOauthParameters exists and reurns a function', function(t){
+test('getOauthParameters exists and returns a function', function(t){
     t.plan(4);
 
     t.ok(getOauthParameters, 'getOauthParameters Exists');
