@@ -49,7 +49,7 @@ test('authorizeRequest errors with no context', function(t){
 
     authorizeRequest(context, accountId, function(error){
         t.ok(error, 'got error');
-        t.deepEqual(error, errors.invalidRequest(context));
+        t.deepEqual(error, errors.invalidRequest(context), 'got correct error and data');
     });
 });
 
