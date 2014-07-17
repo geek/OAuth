@@ -432,8 +432,11 @@ test('authorizeRequestWithClient generate token if response_type is token', func
         },
         generatedToken = 'generated token',
         expectedTokenData = {
+            clientId: testClient.id,
             access_token: generatedToken,
-            expires_in: now
+            expires_in: now,
+            accountId: accountId,
+            token_type: 'Bearer'
         },
         authServer = {
             isSupportedScope: function(){
