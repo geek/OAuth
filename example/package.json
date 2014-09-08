@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "beeline": "^0.2.2"
+  },
+  "dependencies": {
+    "kgo": "^1.0.0"
+  }
+}
