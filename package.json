@@ -1,29 +1,36 @@
 {
-    "author": "Wyatt Preul <wpreul@gmail.com> (http://jsgeek.com)",
-    "name": "auth-server",
-    "description": "OAuth Server for v2.31 of spec",
-    "keywords": ["oauth", "auth server"],
-    "version": "2.2.2",
-    "homepage": "https://github.com/wpreul/oauth",
-    "repository": {
-    "type" : "git",
+  "author": "Wyatt Preul <wpreul@gmail.com> (http://jsgeek.com)",
+  "name": "auth-server",
+  "description": "OAuth Server for v2.31 of spec",
+  "keywords": [
+    "oauth",
+    "auth server"
+  ],
+  "version": "2.2.3",
+  "homepage": "https://github.com/wpreul/oauth",
+  "repository": {
+    "type": "git",
     "url": "git://github.com/wpreul/oauth.git"
-    },
-    "bugs": { "url": "https://github.com/wpreul/oauth/issues" },
-    "main": "index",
-    "dependencies": {},
-    "devDependencies": {
-        "lab": "0.1.x"
-    },
-    "optionalDependencies": {},
-    "engines": {
-        "node": ">=0.8.0"
-    },
-    "scripts": {
-        "test": "make test-cov"
-    },
-    "licenses": [{
-        "type": "MIT +no-false-attribs",
-        "url": "https://github.com/wpreul/OAuth/blob/master/LICENCE"
-    }]
+  },
+  "bugs": {
+    "url": "https://github.com/wpreul/oauth/issues"
+  },
+  "main": "index",
+  "dependencies": {},
+  "devDependencies": {
+    "lab": "0.1.x"
+  },
+  "optionalDependencies": {},
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "scripts": {
+    "test": "make test-cov"
+  },
+  "licenses": [
+    {
+      "type": "MIT +no-false-attribs",
+      "url": "https://github.com/wpreul/OAuth/blob/master/LICENCE"
+    }
+  ]
 }
