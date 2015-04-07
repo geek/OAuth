@@ -7,18 +7,19 @@
     "auth server"
   ],
   "version": "2.2.3",
-  "homepage": "https://github.com/wpreul/oauth",
+  "homepage": "https://github.com/geek/oauth",
   "repository": {
     "type": "git",
-    "url": "git://github.com/wpreul/oauth.git"
+    "url": "git://github.com/geek/oauth.git"
   },
   "bugs": {
-    "url": "https://github.com/wpreul/oauth/issues"
+    "url": "https://github.com/geek/oauth/issues"
   },
   "main": "index",
   "dependencies": {},
   "devDependencies": {
-    "lab": "0.1.x"
+    "code": "1.x.x",
+    "lab": "5.x.x"
   },
   "optionalDependencies": {},
   "engines": {
@@ -30,7 +31,7 @@
   "licenses": [
     {
       "type": "MIT +no-false-attribs",
-      "url": "https://github.com/wpreul/OAuth/blob/master/LICENCE"
+      "url": "https://github.com/geek/OAuth/blob/master/LICENCE"
     }
   ]
 }
