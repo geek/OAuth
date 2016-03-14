@@ -30,7 +30,7 @@
   },
   "licenses": [
     {
-      "type": "MIT +no-false-attribs",
+      "type": "MIT",
       "url": "https://github.com/geek/OAuth/blob/master/LICENCE"
     }
   ]
